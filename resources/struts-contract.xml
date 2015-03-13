@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="contract" extends="json-default">
+		
+		<action name="addCustmrBusiContract_*" class="com.fuiou.mgr.action.contract.CustmrBusiContractMgr" method="{1}">
+			<interceptor-ref name="token">
+        		<param name="includeMethods">addCustmrBusi</param>
+        	</interceptor-ref>
+        	<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="invalid.token">/repeat_commit.jsp</result>
+			<result name="init">/WEB-INF/contract/addCustmrBaseInfo.jsp</result>
+			<result name="success">/WEB-INF/payfor/message.jsp</result>
+		</action>
+		<action name="custmrFileUpload_*" class="com.fuiou.mgr.action.contract.CustmrFileUpload" method="{1}">
+			<interceptor-ref name="token">
+        		<param name="includeMethods">uploadFile</param>
+        	</interceptor-ref>
+        	<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="invalid.token">/repeat_commit.jsp</result>
+			<result name="batCustmr">/WEB-INF/contract/addCumstmrContracts.jsp</result>
+			<result  name="message">/WEB-INF/contract/message.jsp</result>
+		</action>
+		<action name="custmrBusi_*" class="com.fuiou.mgr.action.contract.CustmrBusiContractMgr" method="{1}">
+			<result name="unbindCustmr">/WEB-INF/contract/unbindCustmrContract.jsp</result>
+			<result name="custmrBusiList">/WEB-INF/contract/custmrBusiList.jsp</result>
+			<result name="message">/WEB-INF/payfor/message.jsp</result>
+			<result name="findCustmrBusiById">/WEB-INF/contract/detailCustmrBusiById.jsp</result>
+			<result name="jsonSuccess" type="json">
+				<param name="root">result</param>
+				<param name="noCache">true</param>
+				<param name="contentType">text/plain</param>
+			</result>
+			<result name="batUnbind" type="json">
+				<param name="root">message</param>
+				<param name="noCache">true</param>
+				<param name="contentType">text/plain</param>
+			</result>
+		</action>
+		<action name="api_*" class="com.fuiou.mgr.action.contract.ApiContractAction" method="{1}">
+		</action>
+		<action name="userView" class="com.fuiou.mgr.action.sysmng.UserInfoManagerAction" method="getUsers">
+			<result type="json">
+				<param name="root">strView</param>
+				<param name="noCache">true</param>
+				<param name="contentType">text/plain</param>
+			</result>
+		</action>
+		<action name="createUser" class="com.fuiou.mgr.action.sysmng.UserInfoManagerAction" method="createUser">
+			<result type="json">
+				<param name="root">result</param>
+				<param name="noCache">true</param>
+				<param name="contentType">text/plain</param>
+			</result>
+		</action>
+		<action name="vilidateUser" class="com.fuiou.mgr.action.sysmng.UserInfoManagerAction" method="vilidateUser">
+			<result type="json">
+  				<param name="root">vilidateResult</param> 
+  				<param name="noCache">true</param> 
+  				<param name="contentType">text/plain</param> 
+  			</result>
+  		</action>
+	</package>
+</struts>
+

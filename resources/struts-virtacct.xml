@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="virtacct1" extends="json-default">
+		<interceptors>
+			<interceptor-stack name="crudStack">
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>
+		<action name="queryBlac" class="com.fuiou.mgr.action.virtacct.VirtualAcountAction" method="queryBlac">
+			<result name="queryBalance" type="json">
+			    <param name="root">balance</param>
+			</result>
+	    </action>
+	</package>
+	<package name="virtacct" namespace="/"  extends="default">
+	   <action name="virtacct_*" class="com.fuiou.mgr.action.virtacct.VirtualAcountAction" method="{1}">
+			<result name="init">/WEB-INF/virtAcct/recharge.jsp</result>
+			<result name="queryBalanceIni">/WEB-INF/virtAcct/balanceQuery.jsp</result>
+			<result name="details">/WEB-INF/virtAcct/details.jsp</result>
+			<result name="showMonthDownload">/WEB-INF/virtAcct/monthRpt.jsp</result>
+			<result name="fasTxnDetails">/WEB-INF/virtAcct/fasTxnDetails.jsp</result>
+			<result name="huaAnQueryBalanceIni">/WEB-INF/virtAcct/huaAnQueryBalanceIni.jsp</result>
+			<result name="huaAnDetail">/WEB-INF/virtAcct/huaAnDetail.jsp</result>
+	    </action>
+	    <action name="withdeposit_*" class="com.fuiou.mgr.action.withdeposit.WithDePositAction" method="{1}">
+	    	<interceptor-ref name="token">
+        		<param name="includeMethods">validater</param>
+        	</interceptor-ref>
+        	<interceptor-ref name="defaultStack"></interceptor-ref>
+        	<result name="invalid.token">/repeat_commit.jsp</result>
+	    	<result name="withdeposit">/WEB-INF/virtAcct/withDePosit.jsp</result>
+	    	<result name="confirmWith">/WEB-INF/virtAcct/confirmWith.jsp</result>
+	    	<result name="result">/WEB-INF/virtAcct/withdpt_error.jsp</result>
+	    </action>
+	    <action name="review" class="com.fuiou.mgr.action.withdeposit.WithDePositAction" method="review">
+	    <result name="redirectURL">${frame}</result>
+	    </action>
+	</package>
+</struts>
+

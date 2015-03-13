@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+
+	<properties resource="jdbc.properties" />
+
+    <settings useStatementNamespaces="true" cacheModelsEnabled="true"/>
+
+	<transactionManager type="JDBC">
+        <dataSource type="DBCP">
+            <property name="driverClassName" value="com.ibm.db2.jcc.DB2Driver" />
+            <property name="url" value="${olndb_url}" />
+            <property name="username" value="${olndb_username}" />
+            <property name="password" value="${olndb_password}" />
+            <property name="initialSize" value="0" />
+            <property name="maxActive" value="20" />
+            <property name="maxIdle" value="5" />
+            <property name="minIdle" value="0" />
+            <property name="maxWait" value="60000" />
+            <property name="validationQuery" value="select count(1) from t_web_ssn_ctrl" />
+            <property name="logAbandoned" value="false" />
+            <property name="removeAbandoned" value="true" />
+            <property name="removeAbandonedTimeout" value="600" />
+        </dataSource>
+	</transactionManager>
+    <sqlMap resource="com/fuiou/mer/model/sql/ibatorcommon_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_WEB_SSN_CTRL_SqlMap.xml"/>
+</sqlMapConfig>

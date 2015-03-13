@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="stat" extends="default">
+		<action name="statDay_*" class="com.fuiou.mgr.action.stat.StatDayAction" method="{1}">
+			<result name="inqu">/WEB-INF/stat/statDay.jsp
+			</result>
+			<result name="result">/WEB-INF/stat/statDayResult.jsp
+			</result>
+		</action>
+		<!-- 月报表 -->
+		<action name="statMonth_*" class="com.fuiou.mgr.action.stat.StatMonthAction" method="{1}">
+			<result name="inqu">/WEB-INF/stat/statMonth.jsp</result>
+			<result name="result_AC01">/WEB-INF/stat/statMonthResult.jsp</result>
+			<result name="result_AP01">/WEB-INF/stat/statMonthPayforResult.jsp</result>
+			<result name="result_YZ01">/WEB-INF/stat/statMonthVerifyResult.jsp</result>
+			<result name="result_TP01">/WEB-INF/stat/statMonthRedtktResult.jsp</result>
+		</action>
+		<!-- 年报表 -->
+		<action name="monthBatch_*" class="com.fuiou.mgr.action.stat.MonthBatchAction" method="{1}">
+			<result name="inqu">/WEB-INF/stat/monthBatch.jsp</result>
+			<result name="result_AC01">/WEB-INF/stat/monthBatchResult.jsp</result>
+			<result name="result_AP01">/WEB-INF/stat/monthBatchPayforResult.jsp</result>
+			<result name="result_YZ01">/WEB-INF/stat/monthBatchVerifyResult.jsp</result>
+			<result name="result_TP01">/WEB-INF/stat/monthBatchRedtktResult.jsp</result>
+		</action>
+	</package>
+</struts>
+

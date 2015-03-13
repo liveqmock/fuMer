@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+   
+    <package name="incomefor" extends="default">
+
+        <action name="singleIcfReq" class="com.fuiou.mgr.action.incomefor.SingleIcfReqAction" >
+			<result name="success">/WEB-INF/incomefor/SingleIcfResult.jsp</result>
+			<result name="input">/WEB-INF/incomefor/SingleIcfReq.jsp</result>
+		</action>
+		
+		<action name="singleIcfResult" class="com.fuiou.mgr.action.incomefor.SingleIcfReqAction" method="request">
+			<result name="success">/WEB-INF/incomefor/SingleIcfDispose.jsp</result>
+			<result name="error">/WEB-INF/incomefor/error.jsp</result>
+		</action>
+		
+		<action name="bankName" class="com.fuiou.mgr.action.incomefor.SingleIcfReqAction" method="init">
+			<result name="bankList">/WEB-INF/incomefor/SingleIcfReq.jsp</result>
+		</action>
+		
+		<action name="incomefor_*" class="com.fuiou.mgr.action.incomefor.IncomeforFileUpload" method="{1}">
+			<result name="success">/WEB-INF/incomefor/incomefor_succeed.jsp</result>
+			<result name="incomefor_error">/WEB-INF/incomefor/incomefor_error.jsp</result>
+			<result name="incomefor_succeed">/WEB-INF/incomefor/incomefor_succeed.jsp</result>
+			<result name="incomefor_succeed_error">/WEB-INF/incomefor/incomefor_succeed_error.jsp</result>
+		</action>
+		
+		<action name="credCard_*" class="com.fuiou.mgr.action.creditcard.CreditCardInComForAction" method="{1}">
+			<interceptor-ref name="token">
+        		<param name="includeMethods">confrimPost</param>
+        	</interceptor-ref>
+        	<interceptor-ref name="defaultStack"></interceptor-ref>
+        	<result name="invalid.token">/repeat_commit.jsp</result>
+			<result name="credCard">/WEB-INF/creditCard/card.jsp</result>
+			<result name="cardConfirm">/WEB-INF/creditCard/cardConfirm.jsp</result>
+			<result name="error">/WEB-INF/incomefor/error.jsp</result>
+			<result name="card">/WEB-INF/creditCard/card.jsp</result>
+		</action>
+	    <action name="card" class="com.fuiou.mgr.action.creditcard.CreditCardInComForAction" method="card">
+	    	<result name="redirectURL">${frame}</result>
+	    </action>
+    </package>
+
+</struts>
+

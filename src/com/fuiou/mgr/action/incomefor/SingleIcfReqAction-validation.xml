@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+  <!DOCTYPE validators PUBLIC    
+        "-//OpenSymphony Group//XWork Validator 1.0.2//EN"    
+        "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<validators>
+    <field name="accessBean.bankCd">   
+        <field-validator type="requiredstring">
+            <param name="trim">true</param>
+            <message>银行不能为空</message>   
+        </field-validator> 
+        <field-validator type="regex">
+            <param name="expression"><![CDATA[\d{4}]]></param>
+            <message>银行不正确</message>
+        </field-validator>
+    </field>
+    
+	<field name="accessBean.bankAccount">   
+        <field-validator type="requiredstring">
+        	<param name="trim">true</param>
+            <message>扣款人银行帐号不能为空</message>   
+        </field-validator> 
+        
+        <!--必须为数字-->
+	    <field-validator type="regex">
+		    <param name="expression"><![CDATA[\d{10,28}]]></param>
+		    <message>扣款人银行帐号格式不正确</message>
+	    </field-validator>
+    </field>
+    
+    <field name="accessBean.accountName">   
+        <field-validator type="requiredstring"> 
+        	<param name="trim">true</param>  
+            <message>户名不能为空</message>   
+        </field-validator>
+         
+        <!-- 允许中文和数字混写，长度没有限制 -->
+<!--        <field-validator type="regex">-->
+<!--		    <param name="expression"><![CDATA[^[()（）a-zA-Zａ-ｚＡ-Ｚ0-9０-９\u4e00-\u9fa5]+$]]></param>-->
+<!--		    <message>请输入正确的户名</message>-->
+<!--	    </field-validator>-->
+    </field>
+    
+    <field name="accessBean.amount">
+        <field-validator type="requiredstring"> 
+            <param name="trim">true</param>  
+            <message>金额不能为空</message>   
+        </field-validator>
+        <!-- 不可以有负数 无限长 可以小数 后边最多可以有两位的小数点  开头不能为0-->
+        <field-validator type="regex">
+		    <param name="expression"><![CDATA[^(0\.[1-9]\d?|0\.[0][1-9]|[1-9]\d{0,13}(\.\d{1,2})?)$]]></param>
+		    <message>请输正确的金额格式</message>
+	    </field-validator>
+    </field>
+
+
+    <field name="accessBean.enpSeriaNo">
+    	<!-- 必须为英文或数字 -->
+        <field-validator type="regex">
+		    <param name="expression"><![CDATA[[a-zA-Z0-9_]*]]></param>
+		    <message>企业流水号请输入英文和数字</message>
+	    </field-validator>
+    </field>
+    
+     <field name="accessBean.mobile">
+    	<!-- 必须为数字 -->
+        <field-validator type="regex">
+		    <param name="expression"><![CDATA[(\d{11})?]]></param>
+		    <message>手机号码请输入11位数字</message>
+	    </field-validator>
+    </field>
+</validators>

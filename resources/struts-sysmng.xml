@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+   
+    <package name="sysmng" extends="default">
+
+        <action name="newPasswordReq" class="com.fuiou.mgr.action.sysmng.NewPasswordReqAction">
+			<result name="success">/WEB-INF/sysmng/NewPasswordResult.jsp</result>
+			<result name="input">/WEB-INF/sysmng/NewPasswordReq.jsp</result>
+		</action>
+        <action name="branchBankAliasAdd" class="com.fuiou.mgr.action.sysmng.BranchBankAliasAddAction">
+            <result name="success">/WEB-INF/sysmng/branchBankAliasAddResult.jsp</result>
+            <result name="input">/WEB-INF/sysmng/branchBankAliasAddReq.jsp</result>
+        </action>
+        <action name="branchBankAliasQuery" class="com.fuiou.mgr.action.sysmng.BranchBankAliasQueryAction">
+            <result name="success">/WEB-INF/sysmng/branchBankAliasQueryResult.jsp</result>
+            <result name="input">/WEB-INF/sysmng/branchBankAliasQueryReq.jsp</result>
+        </action>
+		<action name="branchBankAliasDetail" class="com.fuiou.mgr.action.sysmng.BranchBankAliasDetailAction">
+            <result name="success">/WEB-INF/sysmng/branchBankAliasModifyReq.jsp</result>
+            <result name="error">/WEB-INF/sysmng/branchBankAliasUpdateResult.jsp</result>
+        </action>
+        <action name="branchBankAliasModify" class="com.fuiou.mgr.action.sysmng.BranchBankAliasModifyAction">
+            <result name="success">/WEB-INF/sysmng/branchBankAliasUpdateResult.jsp</result>
+        </action>
+        <action name="branchBankAliasDelete" class="com.fuiou.mgr.action.sysmng.BranchBankAliasDeleteAction">
+            <result name="success">/WEB-INF/sysmng/branchBankAliasUpdateResult.jsp</result>
+        </action>
+        <action name="userInfoMgr_*" class="com.fuiou.mgr.action.sysmng.UserInfoManagerAction" method="{1}">
+        	<interceptor-ref name="token">
+        		<param name="includeMethods">addUser</param>
+        	</interceptor-ref>
+        	<interceptor-ref name="defaultStack"></interceptor-ref>
+        	<result name="invalid.token">/repeat_commit.jsp</result>
+        	<result name="init">/WEB-INF/sysmng/userInfoMgr.jsp</result>
+        	<result name="adduser">/WEB-INF/sysmng/userAdd.jsp</result>
+        	<result name="userAdd_error">/WEB-INF/sysmng/userAdd_error.jsp</result>
+        	<result name="editUser">/WEB-INF/sysmng/editUser.jsp</result>
+        	<result name="userList">/WEB-INF/sysmng/userList.jsp</result>
+        </action>
+        <action name="proclamAction_*" class="com.fuiou.mgr.action.sys.ProclamAction" method="{1}">
+        	<result name="proclamAtionsList">/WEB-INF/sysmng/proclamations.jsp</result>
+        	<result name="detailTNotices">/WEB-INF/sysmng/detailTNotices.jsp</result>
+        	<result name="success" type="stream">
+        		<param name="inputName">downloadFile</param>
+        		<param name="contentType">text/plain</param>
+        		<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">4096</param>
+        	</result>
+        </action>
+        <action name="authMchnt_*" class="com.fuiou.mgr.action.sys.AuthMchntAction" method="{1}">
+        </action>
+        
+        <action name="addressList_*" class="com.fuiou.mgr.action.sysmng.AddressListAction" method="{1}">
+        	<result name="findByMchntCd">/WEB-INF/sysmng/addressList.jsp</result>
+        </action>
+    </package>
+
+</struts>
+

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <constant name="struts.ui.theme" value="simple" />
+    <constant name="struts.i18n.encoding" value="UTF-8" />					<!-- 指定默认编码集 -->
+    <constant name="struts.serve.static.browserCache" value="false" />		<!-- 设置浏览器是否缓存静态内容,默认值为true(生产环境下使用) -->
+    <constant name="struts.configuration.xml.reload" value="true" />			<!-- 当struts的配置文件修改后,系统是否自动重新加载该文件,默认值为false(生产环境下使用), -->
+    <constant name="struts.devMode" value="true" />							<!-- 开发模式下使用,这样可以打印出更详细的错误信息 -->
+   <!-- <constant name="struts.enable.DynamicMethodInvocation" value="false" />	 关闭动态方法调用 -->
+    <constant name="struts.i18n.reload" value="false" />					<!-- 国际化信息内码 -->
+    <constant name="struts.custom.i18n.resources" value="messageResource" />	<!--含有actions的完整连续的package名称-->
+    <constant name="struts.multipart.maxSize" value="2097152" />				<!-- 限制文件大小字节 2M -->
+    <constant name="struts.action.extension" value="action,do" />
+
+    <include file="struts-payfor.xml" />
+    <include file="struts-incomefor.xml" />
+    <include file="struts-stat.xml" />
+    <include file="struts-rogatory.xml" />
+    <include file="struts-verify.xml" />
+    <include file="struts-sysmng.xml" />
+    <include file="struts-http.xml"/>
+    <include file="struts-contract.xml" />
+    <include file="struts-virtacct.xml" />
+    <package name="default" extends="struts-default">
+        <interceptors>
+        	<interceptor name="fuMerInterceptor" class="com.fuiou.mgr.interceptor.CheckURLInterceptor"></interceptor>
+            <interceptor-stack name="crudStack">
+                <interceptor-ref name="fuMerInterceptor" />
+                <interceptor-ref name="checkbox" />
+                <interceptor-ref name="params" />
+                <interceptor-ref name="staticParams" />
+<!--                <interceptor-ref name="token" />-->
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="crudStack"/>
+        <global-results>
+            <result name="error">/error.jsp</result>
+        </global-results>
+        <action name="login" class="com.fuiou.mgr.action.sys.LoginAction">
+            <result name="input">/login.jsp</result>
+            <result name="success">/index.jsp</result>
+        </action>
+        <action name="logout" class="com.fuiou.mgr.action.sys.LogoutAction">
+            <result name="input">/login.jsp</result>
+            <result name="success">/login.jsp</result>
+        </action>
+        <action name="changeLang" class="com.fuiou.mgr.action.sys.LocaleAction">
+            <result name="success">/login.jsp</result>
+        </action>
+        <action name="doNothing" class="com.fuiou.mgr.action.sys.DoNothingAction">
+            <result name="redirectURL" >
+                ${frame}
+	    	</result>
+        </action>
+        <action name="doNothing_*" class="com.fuiou.mgr.action.sys.DoNothingAction" method="{1}">
+            <result name="redirectURL" >
+                ${frame}
+	    	</result>
+        </action>
+        <action name="nothing_*" class="com.fuiou.mgr.action.sys.DoNothingAction" method="{1}">
+            <result name="redirectURL" >
+                ${frame}
+	    	</result>
+        </action>
+        <action name="toJSP" class="com.fuiou.mgr.action.sys.ForwardAction">
+            <result name="forwardJSP" >
+                ${toJSP}
+	    	</result>
+        </action>
+    </package>
+</struts>
+

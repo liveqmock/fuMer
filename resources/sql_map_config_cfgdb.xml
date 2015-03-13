@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+
+	<properties resource="jdbc.properties" />
+
+    <settings useStatementNamespaces="true" cacheModelsEnabled="true"/>
+
+	<transactionManager type="JDBC">
+        <dataSource type="DBCP">
+            <property name="driverClassName" value="com.ibm.db2.jcc.DB2Driver" />
+            <property name="url" value="${cfgdb_url}" />
+            <property name="username" value="${cfgdb_username}" />
+            <property name="password" value="${cfgdb_password}" />
+            <property name="initialSize" value="0" />
+            <property name="maxActive" value="20" />
+            <property name="maxIdle" value="5" />
+            <property name="minIdle" value="0" />
+            <property name="maxWait" value="60000" />
+            <property name="validationQuery" value="select count(1) from T_STL_DT_ST" />
+            <property name="logAbandoned" value="false" />
+            <property name="removeAbandoned" value="true" />
+            <property name="removeAbandonedTimeout" value="600" />
+        </dataSource>
+	</transactionManager>
+	<sqlMap resource="com/fuiou/mer/model/sql/ibatorcommon_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_BANK_ALIAS_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_CARD_BIN_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_CITY_ALIAS_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_DATA_DICT_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_MCHNT_KEY_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_MENU_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_OPERATOR_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_PMS_BANK_ALIAS_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_PMS_BANK_INF_DFT_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_PMS_BANK_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_ROOT_BANK_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_STL_DT_ST_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/V_CITY_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/V_PMS_BANK_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/V_PROV_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_FEE_SET_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_MCHNT_FEE_SET_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_INS_MCHNT_INF_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_MCHNT_BUSI_RUT_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_BUSI_RUT_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_INS_BANK_ACNT_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_CUSTMR_BUSI_SqlMap.xml" />
+    <sqlMap resource="com/fuiou/mer/model/sql/T_NOTICES_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_ACNT_BOOK_DTL_HIS_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_CUST_STL_INF_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_FAS_HOLIDAY_DET_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_BASIC_ACNT_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_GROUP_ID_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_MCHNT_CONTRACT_INF_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_CUST_CWD_ACNT_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_BASIC_ACNT_HIS_LOG_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_MCHNT_RLAT_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_ADDRESS_LIST_INF_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_POSITION_INF_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/SYS_NOTICE_MCHNTANDPOSITION_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/SYS_PLATFORM_ATTACHMENT_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/SYS_PLATFORM_NOTICE_CHECK_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/SYS_PLATFORM_NOTICE_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/EMAP_MT_SINGLE_SqlMap.xml"/>
+</sqlMapConfig>

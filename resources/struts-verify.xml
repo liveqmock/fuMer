@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<!-- START SNIPPET: xworkSample -->
+<struts>
+	<package name="com.fuiou.mgr.action.verify" extends="default">
+		<action name="VerifyFileUpload" class="com.fuiou.mgr.action.verify.VerifyFileUpload">
+			<!-- 配置fileUpload的拦截器 --><!--
+			<interceptor-ref name="fileUpload">
+				 配置允许上传的文件类型 
+				<param name="allowedTypes">.txt</param>
+				 配置允许上传的文件大小 
+				<param name="maximumSize">2000000</param>
+			</interceptor-ref>
+			<interceptor-ref name="defaultStack" />
+			--><!-- 动态设置Action的属性值 -->
+			<param name="savePath">/upload</param>
+			<result name="input">/WEB-INF/verify/UploadResult.jsp</result>
+			<result name="error">/WEB-INF/verify/UploadResult.jsp</result>
+			<result name="success">/WEB-INF/verify/UploadResult.jsp</result>
+		</action>
+		
+		<action name="VerifyFileQuery" class="com.fuiou.mgr.action.verify.VerifyFileQuery">
+			<result name="error">/WEB-INF/verify/QueryResult.jsp</result>
+			<result name="success">/WEB-INF/verify/QueryResult.jsp</result>
+			<result name="incomeSuc">/WEB-INF/incomefor/IncomeFileQueryResult.jsp</result>
+			<result name="payforSuc">/WEB-INF/payfor/PayforFileQueryResult.jsp</result>
+		</action>
+		
+		<action name="VerifyFileDownload" class="com.fuiou.mgr.action.verify.VerifyFileDownload">
+			<!-- result的Type必须为stream -->
+			<result name="success" type="stream">
+			<!-- 下载的InputStream流，Struts2自动对应Action中的getDownloadFile方法，该方法必须返回InputStream类型 -->
+			<param name="inputName">downloadFile</param>
+			<!-- 下载文件类型 -->
+			<param name="contentType">text/plain</param>
+			<!-- 下载对话框所弹出的文件名 -->
+			<param name="contentDisposition">attachment;filename="${fileName}"</param>
+			<param name="bufferSize">4096</param>
+			</result>
+		</action>
+		
+		<action name="VerifyFileView" class="com.fuiou.mgr.action.verify.VerifyFileView">
+			<result name="error">/WEB-INF/verify/VerifyFileView.jsp</result>
+			<result name="success">/WEB-INF/verify/VerifyFileView.jsp</result>
+		</action>
+		
+		<action name="VerifyFileDelete" class="com.fuiou.mgr.action.verify.VerifyFileDelete">
+			<result name="error">/WEB-INF/verify/deleteResult.jsp</result>
+			<result name="success">/WEB-INF/verify/deleteResult.jsp</result>
+		</action>
+		<action name="verify_*" class="com.fuiou.mgr.action.verify.SimpleVerifyAction" method="{1}">
+			<result>/WEB-INF/verify/successVerify.jsp</result>
+			<result name="simpleVerify">/WEB-INF/verify/singleVerify.jsp</result>
+			<result name="confirm">/WEB-INF/verify/confirmVerify.jsp</result>
+			<result name="result">/WEB-INF/payfor/message.jsp</result>
+		</action>
+	</package>
+</struts>

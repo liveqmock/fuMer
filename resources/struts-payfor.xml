@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="payfor" namespace="/payfor"  extends="default">
+		<action name="payFor_*" class="com.fuiou.mgr.action.payfor.UploadFileAction" method="{1}">
+			<result name="success">/WEB-INF/payfor/payfor_succeed.jsp</result>
+			<result name="payfor_error">/WEB-INF/payfor/payfor_error.jsp</result>
+			<result name="payfor_succeed">/WEB-INF/payfor/payfor_succeed.jsp</result>
+			<result name="payfor_succeed_error">/WEB-INF/payfor/payfor_succeed_error.jsp</result>
+		</action>
+		
+		<action name="payForOnce_*" class="com.fuiou.mgr.action.payfor.PayforReqAction"  method="{1}">
+			<result name="success">/WEB-INF/payfor/PayforResult.jsp</result>
+			<result name="input">/WEB-INF/payfor/PayforReq.jsp</result>
+			<result name="payfor_error">/WEB-INF/payfor/payfor_error.jsp</result>
+		</action>
+		
+		<action name="jsonPayfor_*" class="com.fuiou.mgr.action.payfor.PayForAjaxAction" method="{1}">
+    		<!-- 返回Map对象的 -->
+    		<result name="provInfs" ></result>
+    	</action>
+    	
+    	<action name="upLoadTemp_*" class="com.fuiou.mgr.action.payfor.UploadTemp" method="{1}">
+			<result name="success">/WEB-INF/payfor/message.jsp</result>
+			<result name="error">/WEB-INF/payfor/message.jsp</result>
+			<result name="input">/WEB-INF/payfor/message.jsp</result>
+			<result name="payforHuaAn_succeed_error">/WEB-INF/payfor/payforHuaAn_succeed_error.jsp</result>
+		
+		</action>
+		
+		
+		
+		<action name="PayforReviewAction_*" class="com.fuiou.mgr.action.payfor.PayforReviewAction" method="{1}">
+		<result name="error">/WEB-INF/verify/QueryResult.jsp</result>
+		<result name="success">/WEB-INF/payfor/fileReview.jsp</result>
+		<result name="fileReview">/WEB-INF/payfor/fileReview.jsp</result>
+		<result name="singleReview">/WEB-INF/payfor/singleReview.jsp</result>
+		<result name="payfor_error">/WEB-INF/payfor/payfor_error.jsp</result>
+	    </action>
+	</package>
+</struts>
+

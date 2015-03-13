@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+
+	<package name="rogatory" extends="default">
+		<!--交易查询 -->
+		<action name="queryCurr_*" class="com.fuiou.mgr.action.rogatory.QueryCurrNAction" method="{1}">
+			<result name="res">/WEB-INF/rogatory/currResult.jsp
+			</result>
+			<result name="detail">/WEB-INF/rogatory/detailResult.jsp
+			</result>
+		</action>
+		<!-- 退票重发、退款处理  -->
+		<action name="returnTicket_*" class="com.fuiou.mgr.action.rogatory.ReturnTicketAction" method="{1}">
+			<result name="detail">/WEB-INF/returnTicket/refundmentDetailResult.jsp</result>
+			<result name="print">/WEB-INF/rogatory/print.jsp</result>
+		</action>
+		
+	</package>
+</struts>
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="http" extends="default">
+		<action name="req" class="com.fuiou.mgr.action.http.req.HttpReq">
+			<result name="success">/WEB-INF/payfor/payfor_succeed.jsp</result>
+		</action>
+		
+		<action name="contract_*" class="com.fuiou.mgr.action.http.req.IvrContractReqAction" method="{1}">
+			<result name="success">/WEB-INF/payfor/payfor_succeed.jsp</result>
+		</action>
+		
+	</package>
+</struts>
+

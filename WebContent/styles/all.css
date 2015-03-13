@@ -1,0 +1,37 @@
+*{font-size:12px;}
+html                           {overflow-y:scroll;}
+body                           { font:12px "\5B8B\4F53",san-serif;}
+body,div,dl,dt,dd,ul,
+ol,li,h1,h2,h3,h4,h5,
+h6,pre,form,fieldset,
+input,textarea,
+blockquote,p                   {padding:0; margin:0;}   
+
+table,td,tr,th                 {font-size:12px;}
+ol,ul                          {list-style:none;}
+li                             {list-style-type:none;}
+img                            {vertical-align:top;border:0;}
+h1,h2,h3,h4,h5,h6              {font-size:12px; font-weight:normal;}
+a                              { color:#3f80c1; text-decoration:none;}
+a:hover, a:visited             { color:#1369bf; text-decoration:none;}
+
+
+.clear{width:0px; height:0px; margin:0px; padding:0px; font-size:0px; line-height:0px; clear:both;}
+
+
+
+/*gaotao fuyouIndex*/
+#indexImg { margin:50px auto; background:url(../images/fuyouIndex2_03.jpg) no-repeat; width:743px; height:475px; overflow:hidden; }
+#indexLogin { height:180px; margin-top:230px; }
+#indexFoot { text-align:center; padding-top:5px; color:#999; line-height:16px; }
+#indexLogin ul.leftUl { display:block; width:100px; float:right; }
+#indexLogin ul.leftUl li { display:block; margin:5px 5px 0px; padding:0; text-align:right; color:#01499b; height:22px; line-height:22px;  }
+#indexLogin ul.rightUl { display:block; width:200px; float:right; }
+#indexLogin ul.rightUl li.li01 { display:block; margin-top:5px; padding:0; width:120px; height:20px; line-height:20px; border:1px solid #a8acad; background:url(../images/fuyouIndex2_06.jpg) repeat-x; overflow:hidden;}
+#indexLogin ul.rightUl li.li02 { display:block; margin-top:5px; padding:0; height:20px; line-height:20px; border:1px solid #a8acad; background:url(../images/fuyouIndex2_06.jpg) repeat-x; overflow:hidden; width:57px; float:left; }
+#indexLogin ul.rightUl li.li03 { display:block; margin-top:5px; margin-left:5px; padding:0; height:20px; line-height:20px; overflow:hidden; width:57px; float:left;  border:none; width:57px; }
+.inputStyle { border:none; background:none; width:120px; height:18px; margin-top:3px; }
+.submitBt { background:url(../images/bn_bg.png) no-repeat; width:77px; height:29px; margin:5px; float:right; margin-right:124px; border:none; margin-top:25px; color:#01499b }
+
+
+

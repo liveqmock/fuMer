@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job-scheduling-data xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    
+    <pre-processing-commands>
+        <delete-jobs-in-group>*</delete-jobs-in-group>  <!-- clear all jobs in scheduler -->
+        <delete-triggers-in-group>*</delete-triggers-in-group> <!-- clear all triggers in scheduler -->
+    </pre-processing-commands>
+    
+    <processing-directives>
+        <!-- if there are any jobs/trigger in scheduler of same name (as in this file), overwrite them -->
+        <overwrite-existing-data>true</overwrite-existing-data>
+        <!-- if there are any jobs/trigger in scheduler of same name (as in this file), and over-write is false, ignore them rather then generating an error -->
+        <ignore-duplicates>false</ignore-duplicates> 
+    </processing-directives>
+    
+    <schedule>
+    	<job>
+    		<name>DiscardPayforJob</name>
+    		<group>DiscardPayforJobGroup</group>
+    		<job-class>com.fuiou.mgr.action.payfor.DiscardPayforJob</job-class>
+    		<durability>true</durability>
+    		<recover>false</recover>
+    	</job>
+    	<job>
+    		<name>BatVerifyCustmrBusiJob</name>
+    		<group>BatVerifyCustmrBusiJobGroup</group>
+    		<job-class>com.fuiou.mgr.action.contract.BatVerifyCustmrBusiJob</job-class>
+    		<durability>true</durability>
+    		<recover>false</recover>
+    	</job>
+	    <job>
+	        <name>PayForFtpQuartzJob</name>
+            <group>FtpQuartzJobGroup</group>
+	        <job-class>com.fuiou.mgr.ftp.payfor.PayForFtpQuartzJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+	    </job>
+        <job>
+            <name>IncomeForFtpQuartzJob</name>
+            <group>FtpQuartzJobGroup</group>
+            <job-class>com.fuiou.mgr.ftp.incomefor.IncomeForFtpQuartzJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <job>
+            <name>VerifyFtpQuartzJob</name>
+            <group>FtpQuartzJobGroup</group>
+            <job-class>com.fuiou.mgr.ftp.verify.VerifyFtpQuartzJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
+         <trigger>
+	        <cron>
+	            <name>DiscardPayforQuartzTrigger</name>
+                <group>DiscardPayfor</group>
+	            <job-name>DiscardPayforJob</job-name>
+                <job-group>DiscardPayforJobGroup</job-group>
+	            <cron-expression>0 26 15 ? * *</cron-expression>   
+<!-- 				<cron-expression>0 0/3 * * * ?</cron-expression> -->
+	        </cron>
+	    </trigger>
+        
+	    
+	    <trigger>
+	        <simple>
+	            <name>PayForFtpQuartzTrigger</name>
+                <group>FtpQuartzTrigger</group>
+	            <job-name>PayForFtpQuartzJob</job-name>
+                <job-group>FtpQuartzJobGroup</job-group>
+	            <repeat-count>-1</repeat-count>      
+	            <repeat-interval>60000</repeat-interval>     
+	        </simple>
+	    </trigger>
+	    
+	    <trigger>
+	    	<simple>
+	    		<name>IncomeForFtpQuartzTrigger</name>
+	    		<group>FtpQuartzTrigger</group>
+	    		<job-name>IncomeForFtpQuartzJob</job-name>
+	    		<job-group>FtpQuartzJobGroup</job-group>
+	    		<repeat-count>-1</repeat-count>
+	    		<repeat-interval>60000</repeat-interval>
+	    	</simple>
+	    </trigger>
+	    
+        <trigger>
+            <simple>
+                <name>VerifyFtpQuartzTrigger</name>
+                <group>FtpQuartzTrigger</group>
+                <job-name>VerifyFtpQuartzJob</job-name>
+                <job-group>FtpQuartzJobGroup</job-group>
+                <repeat-count>-1</repeat-count>
+                <repeat-interval>60000</repeat-interval>
+            </simple>
+        </trigger>
+        
+         <trigger>
+        	<cron>
+        		<name>BatVerifyCustmrBusiTrigger</name>
+        		<group>BatVerifyCustmrBusiTriggerGroup</group>
+        		<job-name>BatVerifyCustmrBusiJob</job-name>
+        		<job-group>BatVerifyCustmrBusiJobGroup</job-group>
+        		<cron-expression>0 0/2 * * * ?</cron-expression>
+        	</cron>
+        </trigger>
+        
+
+    </schedule>    
+</job-scheduling-data>
