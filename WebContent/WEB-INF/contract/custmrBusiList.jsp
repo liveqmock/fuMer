@@ -52,6 +52,7 @@ function checkBox(t){
   <page:pager total="<%=totalRecords %>">
     <tr>
       <td align="center" nowrap="nowrap" class="title">户名</td>
+      <td align="center" nowrap="nowrap" class="title">签约渠道</td>
       <td align="center" nowrap="nowrap" class="title">账号行别</td>
       <td align="center" nowrap="nowrap" class="title">账号</td>
       <td align="center" nowrap="nowrap" class="title">业务类型</td>
@@ -72,6 +73,11 @@ function checkBox(t){
        disabled="disabled"
       </s:if>>
       <td align="center" nowrap="nowrap" class="tr1"><s:property value="#c.USER_NM"/></td>
+      <td align="center" nowrap="nowrap" class="tr1">
+      	<s:if test="#c.GROUP_ID==5">POS</s:if>
+      	<s:if test="#c.GROUP_ID==10">IVR</s:if>
+      	<s:if test="#c.GROUP_ID==15">APP</s:if>
+      </td>
       <td align="center" nowrap="nowrap" class="tr1"><s:property value="#c.BANK_CD"/></td>
       <td align="center" nowrap="nowrap" class="tr1"><s:property value="#c.ACNT_NO"/></td>
       <td align="center" nowrap="nowrap" class="tr1">
@@ -136,7 +142,7 @@ function checkBox(t){
     </tr>
   </s:iterator>
     <tr>
-    <td colspan="12">
+    <td colspan="13">
     <s:if test="#custmrBusiList.size>0">
     	<button type="button" id="batBtn" style="float: right;" class="type_button">批量解约</button>
     </s:if>

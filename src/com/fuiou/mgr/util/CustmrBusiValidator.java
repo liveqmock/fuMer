@@ -76,7 +76,7 @@ public class CustmrBusiValidator {
 		}
 		TCustmrBusi busi = custmrBusiService.selectByAcntAndBusiCd(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(), custmrBusi.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(custmrBusi.getSrcChnl()));
 		if(null!=busi&&CustmrBusiContractUtil.CONTRACT_ST_VALID.equals(busi.getCONTRACT_ST())){
-			resultMap.put(SIGNATURE_ERR, errorCodeMap.get(CustmrBusiValidator.SIGNATURE_ERR));
+			resultMap.put(CONTRACT_IS_VALID, errorCodeMap.get(CustmrBusiValidator.CONTRACT_IS_VALID));
 		}
 		if(!TDataDictConst.BUSI_CD_INCOMEFOR.equals(custmrBusi.getBUSI_CD())){
 			resultMap.put(FORMAT_ERR, "业务代码"+custmrBusi.getBUSI_CD()+"不被支持");
@@ -122,7 +122,7 @@ public class CustmrBusiValidator {
 		}else{
 			Integer cnt = custmrBusiService.findByMobile(custmrBusi.getMCHNT_CD(), custmrBusi.getMOBILE_NO(), custmrBusi.getBUSI_CD(), Arrays.asList(custmrBusi.getACNT_NO()));
 			if(cnt>2){
-				resultMap.put(MOBILE_NO_ERR, "手机号"+custmrBusi.getMOBILE_NO()+"重复出现2次以上");
+				resultMap.put(MOBILE_NO_ERR, "手机号"+custmrBusi.getMOBILE_NO()+"已绑定多张卡");
 				return resultMap;
 			}
 		}

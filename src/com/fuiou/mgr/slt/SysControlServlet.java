@@ -106,6 +106,6 @@ public class SysControlServlet extends HttpServlet {
 		DatabasePropUtils.initDsConfig(jdbcConfigFile, "batdb_url", "batdb_username", "batdb_password","cps","batdb");
 		DatabasePropUtils.initDsConfig(jdbcConfigFile, "cfgdb_url", "cfgdb_username", "cfgdb_password","cps","cfgdb");
 		DatabasePropUtils.initDsConfig(jdbcConfigFile, "olndb_url", "olndb_username", "olndb_password","cps","olndb");
-		DatabasePropUtils.initDsConfig(jdbcConfigFile, "webdb_url", "webdb_username", "webdb_password","cps","webdb");
+//		DatabasePropUtils.initDsConfig(jdbcConfigFile, "webdb_url", "webdb_username", "webdb_password","cps","webdb");
 	}
 }

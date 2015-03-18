@@ -70,11 +70,11 @@ public class SignatureUtil {
 
 	
 	public static void main(String[] args) {
-		IvrContractReqBean bean = new IvrContractReqBean();
-		bean.setReqInsCd("123");
+//		IvrContractReqBean bean = new IvrContractReqBean();
+//		bean.setReqInsCd("123");gen
 //		bean.setAcntNo("a1");
-		bean.setSignature("b9c6188854e9e877cfa7632dea7e94806919af3c");
-		System.out.println(validate(bean, "123456"));
-//		System.out.println(DigestUtils.shaHex("123"));
+//		bean.setSignature("b9c6188854e9e877cfa7632dea7e94806919af3c");
+//		System.out.println(validate(bean, "123456"));
+		System.out.println(DigestUtils.shaHex("12345678"));
 	}
 }

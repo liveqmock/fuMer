@@ -183,7 +183,7 @@ $(function(){
         </td>
         <td class="item">账号行别：</td>
       <td>
-      	<select name="custmrBusi.BANK_CD" id="BANK_CD" disabled="disabled">
+      	<select name="custmrBusi.BANK_CD" id="BANK_CD" <s:if test='actionType=="query"'>disabled="disabled"</s:if>>
         <s:iterator value="bankMap">
         	<option value='<s:property value="value.BANK_CD"/>' <s:if test='#request.custmrBusi.BANK_CD==value.BANK_CD'>selected="selected"</s:if>><s:property value="value.BANK_NM"/></option>
         </s:iterator>
@@ -195,7 +195,7 @@ $(function(){
       <td><input style="width: 125px;" type="text"  <s:if test='actionType=="query"'>disabled="disabled"</s:if>  value="${custmrBusi.USER_NM}" id="USER_NM"  name="custmrBusi.USER_NM" maxlength="30" class="input_out" onfocus="this.className='input_on';this.onmouseout=''" onblur="this.className='input_off';this.onmouseout=function(){this.className='input_out'};" onmousemove="this.className='input_move'" onmouseout="this.className='input_out'"/></td>
       <td class="item">账户属性：</td>
       <td>
-      <select name="custmrBusi.ACNT_TP" id="ACNT_TP" disabled="disabled">
+      <select name="custmrBusi.ACNT_TP" id="ACNT_TP" <s:if test='actionType=="query"'>disabled="disabled"</s:if>>
 		  <option value="*" <s:if test='#request.custmrBusi.ACNT_TP=="*"'>selected="selected"</s:if>>无需验证</option>
       	  <option value="01" <s:if test='#request.custmrBusi.ACNT_TP=="01"'>selected="selected"</s:if>>借记卡</option>
           <option value="02" <s:if test='#request.custmrBusi.ACNT_TP=="02"'>selected="selected"</s:if>>贷记卡</option>

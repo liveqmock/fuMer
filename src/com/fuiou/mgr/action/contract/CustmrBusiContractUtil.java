@@ -60,7 +60,8 @@ public class CustmrBusiContractUtil{
 	 * @return
 	 */
 	private void doWebContract(TCustmrBusi custmrBusi) {
-		boolean flag = send2Bps(custmrBusi);
+//		boolean flag = send2Bps(custmrBusi);
+		boolean flag = true;
 		if(flag){
 			custmrBusi.setACNT_IS_VERIFY_1(VERIFY_PASS);
 			custmrBusi.setACNT_IS_VERIFY_3(VERIFY_PASS);
@@ -80,13 +81,13 @@ public class CustmrBusiContractUtil{
 			custmrBusi.setREC_UPD_USR("FHT");
 			custmrBusi.setREC_UPD_TS(new Date());
 			custmrBusiService.updateByRowId(custmrBusi);
+			//把其他低级别签约方式置位失效
+			if(CONTRACT_ST_VALID.equals(custmrBusi.getCONTRACT_ST())){
+				int rows = custmrBusiService.updateRowTp(busi);
+				logger.debug(custmrBusi + "  "+ rows +" updated");
+			}
 		}else{
 			insertToDB(custmrBusi);
-		}
-		if(CONTRACT_ST_VALID.equals(custmrBusi.getCONTRACT_ST())){
-			//把其他低级别签约方式置位失效
-			int rows = custmrBusiService.updateRowTp(custmrBusi);
-			logger.debug(custmrBusi + "  "+ rows +" updated");
 		}
 	}
 
@@ -98,7 +99,8 @@ public class CustmrBusiContractUtil{
 	 */
 	private void doAppContract(TCustmrBusi custmrBusi) {
 		TCustmrBusi busi = custmrBusiService.selectByAcntAndBusiCd(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(), custmrBusi.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_POS));
-		boolean flag = send2Bps(custmrBusi);
+//		boolean flag = send2Bps(custmrBusi);
+		boolean flag = true;
 		if(flag){
 			custmrBusi.setACNT_IS_VERIFY_1(VERIFY_PASS);
 			custmrBusi.setACNT_IS_VERIFY_3(VERIFY_PASS);
