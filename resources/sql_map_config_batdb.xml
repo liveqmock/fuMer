@@ -12,9 +12,9 @@
 	<transactionManager type="JDBC">
         <dataSource type="DBCP">
             <property name="driverClassName" value="com.ibm.db2.jcc.DB2Driver" />
-            <property name="url" value="${batdb_url}" />
-            <property name="username" value="${batdb_username}" />
-            <property name="password" value="${batdb_password}" />
+            <property name="url" value="${apsdb_url}" />
+            <property name="username" value="${apsdb_username}" />
+            <property name="password" value="${apsdb_password}" />
             <property name="initialSize" value="0" />
             <property name="maxActive" value="20" />
             <property name="maxIdle" value="5" />

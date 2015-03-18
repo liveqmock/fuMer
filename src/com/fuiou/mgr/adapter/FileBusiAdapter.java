@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.fuiou.mer.service.TApsTxnLogService;
 import com.fuiou.mer.service.TDataDictService;
 import com.fuiou.mer.service.TFileInfService;
-import com.fuiou.mer.service.TMchntKeyService;
 import com.fuiou.mer.util.FuMerUtil;
 import com.fuiou.mer.util.MemcacheUtil;
 import com.fuiou.mer.util.TDataDictConst;
