@@ -2,6 +2,7 @@ package com.fuiou.mgr.bps;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.fuiou.key.SysKeyLoaderUtil;
 import com.fuiou.mer.model.IvrContractReqBean;
 import com.fuiou.mer.model.TCustmrBusi;
 import com.fuiou.mer.model.TIvrOrderInf;
@@ -16,6 +17,7 @@ import com.thoughtworks.xstream.XStream;
 public class BpsTransaction {
 	
 	public static final String SUCC_CODE = "0000";//网关验证通过响应代码
+	public static final String CHANNEL_ID = "APS";
 
 	/**
 	 * 建行PA01签约验证接口
@@ -28,7 +30,7 @@ public class BpsTransaction {
 			BpsUtilBean bean = new BpsUtilBean();
 			bean.setTranCd("PA01");
 			bean.setDestInsCd(SystemParams.getProperty("ccbInsCd"));//发往建行
-			bean.setChannelId("APS");
+			bean.setChannelId(CHANNEL_ID);
 			bean.setPriority("3");
 			bean.setTransNo(SsnGenerator.getSsn(bean.getDestInsCd()));
 			bean.setReqDate(currentDt);
@@ -41,8 +43,9 @@ public class BpsTransaction {
 			bean.setCVN2("");
 			bean.setVaildDate("");
 			bean.setMobileNo(custmrBusi.getMOBILE_NO());
-			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
-			bean.setMD5(MD5Util.encode(md5Src, null));
+//			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
+//			bean.setMD5(MD5Util.encode(md5Src, null));
+			setMd5Content(bean);
 			XStream stream = new XStream();
 			stream.processAnnotations(BpsUtilBean.class);
 			String xml = stream.toXML(bean);
@@ -72,7 +75,7 @@ public class BpsTransaction {
 			String currentDay = FuMerUtil.getCurrTime("yyyyMMdd");
 			bean.setTranCd("DF");
 			bean.setDestInsCd(SystemParams.getProperty("cupsInsCd"));//发往银联cups
-			bean.setChannelId("APS");
+			bean.setChannelId(CHANNEL_ID);
 			bean.setPriority("3");
 			bean.setTransNo(SsnGenerator.getSsn(bean.getDestInsCd()));
 			bean.setReqDate(currentDay);
@@ -88,8 +91,9 @@ public class BpsTransaction {
 			bean.setInterBankNo("");//开户行联行号
 			bean.setNote("");//
 			bean.setAddrFlag("");//同城异地标志(1—同城(跨行) 2—异地(跨行) 0–行内(异地) 3–行内(同城) 不填默认行内 目前只有深发,民生支持跨行)
-			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
-			bean.setMD5(MD5Util.encode(md5Src, null));
+//			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
+//			bean.setMD5(MD5Util.encode(md5Src, null));
+			setMd5Content(bean);
 			XStream stream = new XStream();
 			stream.processAnnotations(BpsUtilBean.class);
 			String xml = stream.toXML(bean);
@@ -126,7 +130,7 @@ public class BpsTransaction {
 			String currentDt = FuMerUtil.getCurrTime("yyyyMMdd");
 			bean.setTranCd("YMDK");
 			bean.setDestInsCd(SystemParams.getProperty("upmpInsCd"));//发往银联
-			bean.setChannelId("APS");
+			bean.setChannelId(CHANNEL_ID);
 			bean.setPriority("3");
 			bean.setTransNo(SsnGenerator.getSsn(bean.getDestInsCd()));
 			bean.setTranAmt(order.getORDER_AMT()+"");
@@ -143,8 +147,9 @@ public class BpsTransaction {
 			bean.setMobileNo(order.getMOBILE_NO());
 			bean.setInf(reqBean.getPin());//密码
 //			bean.setInf("ezAxfDM3MDY4MTE5ODkxMjAxMTgxMnzpgITplJ98MTg1MDE2MjU5NTB8fEt6cmpFYzFCbUtsb1JvUkdNK1EwWk5hVWNFOVVpWFdUVFh0NlhYTU1qN25NbGxLUE9NNFZwN0ZtOHlrZkRVTHNxTDV2TVpQanNYZmV2Y1Vta21JKzBzN2RzTmRkTDNoY0RNbmN1YzNRbzhxdFUrLzI2Rk1uTVpXaTNxTVo3OXVlYWJKZDlhZ0ZwVVlWRlRleEl2TllXSFF2NDN2N2tKdE5WN1FUcmhKVjkrbz18fH0=");//测试密码
-			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
-			bean.setMD5(MD5Util.encode(md5Src, null));
+//			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
+//			bean.setMD5(MD5Util.encode(md5Src, null));
+			setMd5Content(bean);
 			XStream stream = new XStream();
 			stream.processAnnotations(BpsUtilBean.class);
 			String xml = stream.toXML(bean);
@@ -166,5 +171,30 @@ public class BpsTransaction {
 			resultBean.setRespInfo("未知错误");
 		}
 		return resultBean;
+	}
+	
+	private static void setMd5Content(BpsUtilBean bean){
+		StringBuilder md5Source = new StringBuilder();
+		if(StringUtils.isNotEmpty(bean.getDestInsCd())){
+			md5Source.append(bean.getDestInsCd());
+		}
+		if(StringUtils.isNotEmpty(bean.getReqDate())){
+			md5Source.append(bean.getReqDate());
+		}
+		if(StringUtils.isNotEmpty(bean.getDestSsn())){
+			md5Source.append(bean.getDestSsn());
+		}
+		if(StringUtils.isNotEmpty(bean.getDebitAccNo())){
+			md5Source.append(bean.getDebitAccNo());
+		}
+		if(StringUtils.isNotEmpty(bean.getCreditAccNo())){
+			md5Source.append(bean.getCreditAccNo());
+		}
+		if(StringUtils.isNotEmpty(bean.getTranAmt())){
+			md5Source.append(bean.getTranAmt());
+		}
+		String  key = SysKeyLoaderUtil.loadSysKey("http://192.168.8.22:8086/kms/key/sysKeyLoaderService?wsdl",CHANNEL_ID, "BPS_COMM");
+		md5Source.append(key);
+		bean.setMD5(MD5Util.encode(md5Source.toString(), null));
 	}
 }

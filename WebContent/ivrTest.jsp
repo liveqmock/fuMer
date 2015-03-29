@@ -10,7 +10,8 @@
 <body>
 <%-- <form action="<%=root%>/contract_getMhcntListByCard.do" method="post"> --%>
 <%-- <form action="<%=root%>/contract_isContractMobile.do" method="post"> --%>
-	<form action="<%=root%>/contract_orderPay.do" method="post">
+<%-- 	<form action="<%=root%>/contract_orderPay.do" method="post"> --%>
+	<form action="<%=root%>/contract_vpcCrypt.do" method="post">
 <%-- 		<form action="<%=root%>/contract_getOrderInf.do" method="post"> --%>
 		<table>
 			<tr>

@@ -209,7 +209,7 @@ public class IDCardValidateUtil {
     @SuppressWarnings("static-access")
 	public static void main(String[] args) {
     	IDCardValidateUtil cc = new IDCardValidateUtil();
-        System.out.println(cc.IDCardValidate("43072319870723721"));
+        System.out.println(cc.IDCardValidate("411281198811223516"));
     }
     /*********************************** 身份证验证结束 ****************************************/
 }

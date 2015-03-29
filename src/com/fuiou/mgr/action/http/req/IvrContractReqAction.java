@@ -27,6 +27,7 @@ import com.fuiou.mgr.action.contract.CustmrBusiContractUtil;
 import com.fuiou.mgr.bps.BpsTransaction;
 import com.fuiou.mgr.http.util.SignatureUtil;
 import com.fuiou.mgr.util.CustmrBusiValidator;
+import com.fuiou.mgr.util.VPCDecodeUtil;
 
 /**
  * 提供给IVR厂商的协议库相关接口
@@ -139,6 +140,7 @@ public class IvrContractReqAction extends BaseAction {
 					respBean.setOrderNo(order.getORDER_NO());
 					respBean.setOrderAmt(order.getORDER_AMT()+"");
 					respBean.setTranCurrCd(order.getTRAN_CURR_CD());
+					respBean.setFuiouMchntchntCd(SystemParams.getProperty("fuiouMchntCd"));
 					respBean.setMchntCd(order.getROOT_MCHNT_CD());
 					respBean.setMchntNm(order.getROOT_MCHNT_NAME());
 					respBean.setAcntNo(order.getACNT_NO());
@@ -210,6 +212,24 @@ public class IvrContractReqAction extends BaseAction {
 			}
 		}
 		this.writeMsg(Object2Xml.object2xml(respBean,IvrContractRespBean.class));
+	}
+	
+	/**
+	 * 解密vpc报文
+	 */
+	public void vpcCrypt(){
+		reqBean = received();
+		if (reqBean != null) {
+			String result = VPCDecodeUtil.doCrypt(reqBean.getFlag(), reqBean.getVpcInfo());
+			String tempStr = "XXXXX";
+			respBean.setRespCd("202000");
+			respBean.setRespDesc("处理成功");
+			respBean.setVpcInfo(tempStr);
+			String respXml = Object2Xml.object2xml(respBean, IvrContractRespBean.class);
+			this.writeMsg(respXml.replace(tempStr, result));
+		}else{
+			this.writeMsg(Object2Xml.object2xml(respBean, IvrContractRespBean.class));
+		}
 	}
 
 	/**

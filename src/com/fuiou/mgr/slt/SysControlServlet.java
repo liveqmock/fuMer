@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.fuiou.mer.util.DatabasePropUtils;
 import com.fuiou.mer.util.SystemParams;
 import com.fuiou.mgr.util.MonitorThread;
+import com.fuiou.mgr.util.VPCDecodeUtil;
 
 /**
  * Servlet implementation class Ipl
@@ -26,6 +27,7 @@ public class SysControlServlet extends HttpServlet {
 		logger.info("系统初始化");
 		try {
 			initJdbcConfig();
+			initKey();
 			SystemParams.paramInit();
 			logger.info("系统初始化完成");
 		} catch (Exception e) {
@@ -33,6 +35,7 @@ public class SysControlServlet extends HttpServlet {
 		}
 		new MonitorThread("Monitor thread").start();
 	}
+	
 	public void destroy() {
 	}
 
@@ -100,10 +103,16 @@ public class SysControlServlet extends HttpServlet {
 		}
 		return result;
 	}
+	
+	private void initKey() {
+		String pubKeyPath = getClass().getResource("/").getPath()+File.separator+"pub.key";
+		String priKeyPath = getClass().getResource("/").getPath()+File.separator+"pri.key";
+		VPCDecodeUtil.init(pubKeyPath,priKeyPath);
+	}
 
 	private void initJdbcConfig(){
 		String jdbcConfigFile = getClass().getResource("/").getPath()+File.separator+"jdbc.properties";
-		DatabasePropUtils.initDsConfig(jdbcConfigFile, "apsdb_url", "apsdb_username", "apsdb_password","cps","apsdb");
+		DatabasePropUtils.initDsConfig(jdbcConfigFile, "batdb_url", "batdb_username", "batdb_password","cps","batdb");
 		DatabasePropUtils.initDsConfig(jdbcConfigFile, "cfgdb_url", "cfgdb_username", "cfgdb_password","cps","cfgdb");
 		DatabasePropUtils.initDsConfig(jdbcConfigFile, "olndb_url", "olndb_username", "olndb_password","cps","olndb");
 //		DatabasePropUtils.initDsConfig(jdbcConfigFile, "webdb_url", "webdb_username", "webdb_password","cps","webdb");
