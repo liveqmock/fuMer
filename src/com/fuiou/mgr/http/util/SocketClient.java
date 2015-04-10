@@ -78,5 +78,46 @@ public class SocketClient {
 	}
 	
 	
-
+    /**
+     * 用socket往服务端发送报文
+     * @param ip：服务端IP
+     * @param port：服务端端口
+     * @param str：带发送报文信息
+     * @param charSet：字符编码
+     * @param packLen：包头长度
+     * @return
+     */
+	public static String sendToVpc(String ip,int port,String str,String charSet){
+			logger.info("准备发送报文,IP="+ip+";port="+port);
+			Socket socket = new Socket();
+			SocketAddress address = new InetSocketAddress(ip, port);
+			StringBuffer sb = new StringBuffer();
+			try {
+				socket.connect(address, CONNECT_TIMEOUT);
+				socket.setSoTimeout(READ_TIMEOUT);
+				OutputStream os = socket.getOutputStream();
+				InputStream is = socket.getInputStream();
+				BufferedInputStream inputStream = new BufferedInputStream(is);
+				logger.debug("outStr:"+str);
+				os.write(str.getBytes(charSet));
+				os.flush();
+				byte[] buffer = new byte[1024];
+				int len;
+			      while ((len=inputStream.read(buffer)) != -1) {  
+			         sb.append(new String(buffer, 0, len));  
+			      }  
+				logger.debug("rspStr:"+sb.toString());
+				inputStream.close();
+				return sb.toString();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return sb.toString();
+			}finally{
+				try {
+					socket.close();
+				} catch (IOException e) {
+					logger.error("socket 关闭发生异常"+e.getMessage());
+				}
+			}
+	}
 }
