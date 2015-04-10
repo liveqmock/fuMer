@@ -60,8 +60,8 @@ public class CustmrBusiContractUtil{
 	 * @return
 	 */
 	private void doWebContract(TCustmrBusi custmrBusi) {
-//		boolean flag = send2Bps(custmrBusi);
-		boolean flag = true;
+		boolean flag = send2Bps(custmrBusi);
+//		boolean flag = true;
 		if(flag){
 			custmrBusi.setACNT_IS_VERIFY_1(VERIFY_PASS);
 			custmrBusi.setACNT_IS_VERIFY_3(VERIFY_PASS);
@@ -80,6 +80,7 @@ public class CustmrBusiContractUtil{
 			custmrBusi.setROW_ID(busi.getROW_ID());
 			custmrBusi.setREC_UPD_USR("FHT");
 			custmrBusi.setREC_UPD_TS(new Date());
+			custmrBusi.setRESERVED2("0");
 			custmrBusiService.updateByRowId(custmrBusi);
 			//把其他低级别签约方式置位失效
 			if(CONTRACT_ST_VALID.equals(custmrBusi.getCONTRACT_ST())){
@@ -99,8 +100,8 @@ public class CustmrBusiContractUtil{
 	 */
 	private void doAppContract(TCustmrBusi custmrBusi) {
 		TCustmrBusi busi = custmrBusiService.selectByAcntAndBusiCd(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(), custmrBusi.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_POS));
-//		boolean flag = send2Bps(custmrBusi);
-		boolean flag = true;
+		boolean flag = send2Bps(custmrBusi);
+//		boolean flag = true;
 		if(flag){
 			custmrBusi.setACNT_IS_VERIFY_1(VERIFY_PASS);
 			custmrBusi.setACNT_IS_VERIFY_3(VERIFY_PASS);
@@ -108,8 +109,10 @@ public class CustmrBusiContractUtil{
 		}
 		if(busi!=null){
 			custmrBusi.setROW_ID(busi.getROW_ID());
+			custmrBusi.setRESERVED2("0");
 			custmrBusi.setREC_UPD_USR("FHT");
 			custmrBusi.setREC_UPD_TS(new Date());
+			custmrBusiService.updateByRowId(custmrBusi);
 		}else{
 			insertToDB(custmrBusi);
 		}
@@ -129,6 +132,7 @@ public class CustmrBusiContractUtil{
 			custmrBusi.setGROUP_ID(CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_POS));
 			custmrBusi.setREC_UPD_USR("FHT");
 			custmrBusi.setREC_UPD_TS(new Date());
+			custmrBusi.setRESERVED2("0");
 			if(VERIFY_PASS.equals(busi.getACNT_IS_VERIFY_1())||VERIFY_PASS.equals(busi.getACNT_IS_VERIFY_3())){
 				custmrBusi.setCONTRACT_ST(CONTRACT_ST_VALID);
 			}
