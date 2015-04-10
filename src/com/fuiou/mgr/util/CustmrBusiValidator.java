@@ -9,8 +9,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fuiou.mer.model.TCardBin;
 import com.fuiou.mer.model.TCustmrBusi;
 import com.fuiou.mer.service.TCustmrBusiService;
+import com.fuiou.mer.util.CardUtil;
 import com.fuiou.mer.util.FuMerUtil;
 import com.fuiou.mer.util.MemcacheUtil;
 import com.fuiou.mer.util.RegexCheckUtil;
@@ -114,6 +116,19 @@ public class CustmrBusiValidator {
 		}
 		if((creditTps[0].equals(custmrBusi.getCREDT_TP()) && !"YES".equals(IDCardValidateUtil.IDCardValidate(custmrBusi.getCREDT_NO()))) || (!creditTps[0].equals(custmrBusi.getCREDT_TP()) && !RegexCheckUtil.checkZhengjian(custmrBusi.getCREDT_NO()))){
 			resultMap.put(FORMAT_ERR, "证件号码"+custmrBusi.getCREDT_NO()+"不合法");
+			return resultMap;
+		}
+		if(!RegexCheckUtil.checkACount(custmrBusi.getACNT_NO())){
+			resultMap.put(FORMAT_ERR, "卡号格式不对");
+			return resultMap;
+		}
+		TCardBin cardBin = CardUtil.getTCardBinByCardNo(custmrBusi.getACNT_NO(), SystemParams.cardBinMap);
+		if(cardBin==null){
+			resultMap.put(FORMAT_ERR, "未找到卡bin");
+			return resultMap;
+		}
+		if(!"01".equals(cardBin.getCARD_ATTR())){
+			resultMap.put(FORMAT_ERR, "暂不支持非借记卡");
 			return resultMap;
 		}
 		if(!RegexCheckUtil.checkMobile(custmrBusi.getMOBILE_NO())){
