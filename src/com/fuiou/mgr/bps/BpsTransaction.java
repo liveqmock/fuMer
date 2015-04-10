@@ -17,7 +17,7 @@ import com.thoughtworks.xstream.XStream;
 public class BpsTransaction {
 	
 	public static final String SUCC_CODE = "0000";//网关验证通过响应代码
-	public static final String CHANNEL_ID = "APS";
+	public static final String CHANNEL_ID = "FHT";
 
 	/**
 	 * 建行PA01签约验证接口
@@ -43,8 +43,6 @@ public class BpsTransaction {
 			bean.setCVN2("");
 			bean.setVaildDate("");
 			bean.setMobileNo(custmrBusi.getMOBILE_NO());
-//			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
-//			bean.setMD5(MD5Util.encode(md5Src, null));
 			setMd5Content(bean);
 			XStream stream = new XStream();
 			stream.processAnnotations(BpsUtilBean.class);
@@ -193,8 +191,9 @@ public class BpsTransaction {
 		if(StringUtils.isNotEmpty(bean.getTranAmt())){
 			md5Source.append(bean.getTranAmt());
 		}
-		String  key = SysKeyLoaderUtil.loadSysKey("http://192.168.8.22:8086/kms/key/sysKeyLoaderService?wsdl",CHANNEL_ID, "BPS_COMM");
-		md5Source.append(key);
+//		String  key = SysKeyLoaderUtil.loadSysKey("http://192.168.8.22:8086/kms/key/sysKeyLoaderService?wsdl",CHANNEL_ID.toLowerCase(), "BPS_COMM");
+//		md5Source.append(key);
+		md5Source.append("123456");
 		bean.setMD5(MD5Util.encode(md5Source.toString(), null));
 	}
 }
