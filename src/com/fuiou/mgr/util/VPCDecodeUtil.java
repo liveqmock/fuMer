@@ -14,6 +14,8 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -22,6 +24,10 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.pkcs.RSAPrivateKeyStructure;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import com.fuiou.mer.model.TIvrOrderInf;
+import com.fuiou.mer.util.SystemParams;
+import com.fuiou.mgr.http.httpClient.HttpClientHelper;
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -311,13 +317,22 @@ public class VPCDecodeUtil {
 			loadPublicKey(in_pub);
 			loadPrivateKey(in_pri);
 
-			String src = "CstmInfo={01|3623231989|123||123456||}&EnCdMd=UTF-8&MchntCd=602020000001123&OdrDtTm=20141103144700&OdrId=123456789&OdrPhoneNum=1821254557&PosRes=123456&PriAcct=6226987456321231&TranAmtPos=000000000001&TranCurrCd=156&TranSubTp=00&TransSsn=12345678&TranTp=82&Version=1.0.0&VPCId=00168400cb13&MsgSign=kESDbdFeByc2TQVGDdbi0WAgRDMJ0EgakUm1fIG+xxbKi7t4rjevf3C6VsgPdjQ7U9emCuA3F57+0RhAF+IoeWBEdmb7VdOWPY9/fpPNRU663Raqzm9Vt1L63uTR+hdG1DTeZq/siJteQ+sOhL/lfmxOVsV9WIrL86GLsNaE/Vw=";
-
-			String out1 = encrypt(src, publicKey);
-//			String dest = decrypt(out1, privateKey);
-			System.out.println("Encode Result:" + out1);
-//			System.out.println("Decode Result:" + dest);
-			
+//			String src = "CstmInfo={01|3623231989|123||123456||}&EnCdMd=UTF-8&MchntCd=602020000001123&OdrDtTm=20141103144700&OdrId=123456789&OdrPhoneNum=1821254557&PosRes=123456&PriAcct=6226987456321231&TranAmtPos=000000000001&TranCurrCd=156&TranSubTp=00&TransSsn=12345678&TranTp=82&Version=1.0.0&VPCId=00168400cb13&MsgSign=kESDbdFeByc2TQVGDdbi0WAgRDMJ0EgakUm1fIG+xxbKi7t4rjevf3C6VsgPdjQ7U9emCuA3F57+0RhAF+IoeWBEdmb7VdOWPY9/fpPNRU663Raqzm9Vt1L63uTR+hdG1DTeZq/siJteQ+sOhL/lfmxOVsV9WIrL86GLsNaE/Vw=";
+			String out1 = "7CulMeD9zpztHmWXdcYgIGHllQuvM/vgKjv9Im6D4u27CpkAjRzZgCKA5XujuYrU"+
+							"qKA4CTlwdG3s3OtHpGeC3QdMbJGbSh5rB0xskZtKHmu0AhPLRiAy9QLAHk3SV+5j"+
+							"dTjQmOy5VyOoz/C0jeO/duyhs+mYxXfvZxEFTbO8bRIuvNlBUwqDazoroh2lXI2N"+
+							"FUr7vH8bH/UyqYeC3XZMQQdMbJGbSh5r6Ts2YQuVy8JzoBenVi5y6HYft+GYWID4"+
+							"VXg1I8S6ZdR/QpPWpwGZFaHLAX/fF4izE//CRMhYgAVriAzEm6Y+abPmQPrUgU9c"+
+							"9UKh9Q1vWKvdc9fckxmzDK2ksSjKexJQwUTzHQVTAsvulzQeGNCn2cJ7+my/fJGn&NG56RdX/LxslBSfal5+W/9dQI21VuGDr4p8GV4pdRBPDMUrBji1ZPCD8F4eq8qJr"+
+							"nPliAlb/HdjdmmVGgrnnj+ELRLW8xqnPfsRnsqXdDEdxMDMPk2RF5lSnnkLmCovB"+
+							"LMRZfSULhLirIYjYVobk23/VvaJnbF3GLkpmpxpoaub+9vyRpx69YjrKKOYSRPri"+
+							"qD1qHw+8T1BwtZBVrBjbJ2qdBdflqAC0Ogq31+bNETfp6kCXX6yHl+howvA2JzNN"+
+							"/w1j82HWq6kp6FViKadBfhlqoUp9Kp2Ipu0oxUidwiUAjkHYSuAPpW1GgOQfIwJB"+
+							"/F1VkR7t/kyl5+5Djd/aOg==";
+//			String out1 = encrypt(src, publicKey);
+			String dest = decrypt(out1, privateKey);
+//			System.out.println("Encode Result:" + out1);
+			System.out.println("Decode Result:" + dest);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
