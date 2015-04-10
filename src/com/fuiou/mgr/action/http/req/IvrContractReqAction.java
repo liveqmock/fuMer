@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.fuiou.mer.model.IvrContractReqBean;
@@ -26,6 +29,7 @@ import com.fuiou.mgr.action.BaseAction;
 import com.fuiou.mgr.action.contract.CustmrBusiContractUtil;
 import com.fuiou.mgr.bps.BpsTransaction;
 import com.fuiou.mgr.http.util.SignatureUtil;
+import com.fuiou.mgr.http.util.SocketClient;
 import com.fuiou.mgr.util.CustmrBusiValidator;
 import com.fuiou.mgr.util.VPCDecodeUtil;
 
@@ -86,6 +90,7 @@ public class IvrContractReqAction extends BaseAction {
 	 */
 	public void isContractMobile() {
 		reqBean = received();
+		String vpcMsg = request.getParameter("");
 		if (reqBean != null) {
 			String mchntCd = reqBean.getMchntCd();
 			String mobile = reqBean.getMobile();
@@ -115,9 +120,9 @@ public class IvrContractReqAction extends BaseAction {
 	}
 
 	/**
-	 * IVR请求获取订单信息
+	 * IVR请求获取并且将订单信息推送给VPC
 	 */
-	public void getOrderInf() {
+	public void sendOrderToVpc() {
 		reqBean = received();
 		if (reqBean != null) {
 			String flag = reqBean.getFlag();//签约标志,如果是签约则协议库状态必须为未生效状态,如果是解约协议库则必须处于生效状态,否则拒绝
@@ -132,26 +137,14 @@ public class IvrContractReqAction extends BaseAction {
 				IvrOrderInfService orderService = new IvrOrderInfService();
 				TIvrOrderInf order = orderService.insertNewOrder(reqBean,custmrBusi);
 				if(null!=order){
-					respBean.setRespCd("202000");
-					respBean.setRespDesc("获取订单信息成功");
-					respBean.setOrderDt(order.getORDER_DT());
-					respBean.setOrderTm(order.getORDER_TM());
-					respBean.setTransNo(order.getTRANS_NO());
-					respBean.setOrderNo(order.getORDER_NO());
-					respBean.setOrderAmt(order.getORDER_AMT()+"");
-					respBean.setTranCurrCd(order.getTRAN_CURR_CD());
-					respBean.setFuiouMchntchntCd(SystemParams.getProperty("fuiouMchntCd"));
-					respBean.setMchntCd(order.getROOT_MCHNT_CD());
-					respBean.setMchntNm(order.getROOT_MCHNT_NAME());
-					respBean.setAcntNo(order.getACNT_NO());
-					respBean.setUserNm(order.getUSER_NM());
-					respBean.setMobile(order.getMOBILE_NO());
-					respBean.setCertTp(order.getCERT_TP());
-					respBean.setCertNo(order.getCERT_NO());
-					respBean.setMemo(order.getMEMO());
+					boolean isSentOk = sendToVpc(order);//将订单信息封装并且发送给VPC
+					if(isSentOk){
+						respBean.setRespCd("202000");
+						respBean.setRespDesc("订单信息发送成功");
+					}
 				}else{
 					respBean.setRespCd("202012");
-					respBean.setRespDesc("获取订单信息失败");
+					respBean.setRespDesc("订单信息发送失败");
 				}
 			}
 		}
@@ -159,8 +152,66 @@ public class IvrContractReqAction extends BaseAction {
 	}
 
 	/**
+	 * 将订单信息封装并且发送给VPC
+	 * @param order
+	 * @return
+	 */
+	private boolean sendToVpc(TIvrOrderInf order) {
+		StringBuilder params = new StringBuilder();
+		params.append("Version=1.0.0&").append("TranTp=82&").append("TranSubTp=00&")
+		.append("ChkFlg=1000000000000000&").append("TranAmtPos=000000001000&")
+		.append("TranCurrCd=156&").append("VPCId=00168400cd2c&")
+		.append("MchntCd="+SystemParams.getProperty("fuiouMchntCd")+"&").append("OdrId="+order.getORDER_NO()+"&")
+		.append("OdrPhoneNum="+order.getMOBILE_NO()+"&").append("PriAcct="+order.getACNT_NO()+"&")
+		.append("OdrDtTm="+order.getORDER_DT()+order.getORDER_TM()+"&").append("TransSsn="+order.getTRANS_NO());
+		String vpcInfo = VPCDecodeUtil.doCrypt("C", params.toString());
+		vpcInfo = "User-Agent: Donjin Http 0.1\r\nCache-Control: no-cache\r\nContent-Type: text/xml;charset=UTF-8\r\nAccept: */*\r\nContent-Length: "+vpcInfo.length()+"\r\n\r\n"+vpcInfo;
+		String respStr = SocketClient.sendToVpc(SystemParams.getProperty("vpcIp"), Integer.valueOf(SystemParams.getProperty("vpcPort")), vpcInfo, "UTF-8");
+		try{
+			if(StringUtils.isNotEmpty(respStr)){
+				int index = respStr.indexOf("\r\n\r\n");
+				respStr = respStr.substring(index);
+				respStr = VPCDecodeUtil.doCrypt("D", respStr);
+				System.out.println(respStr);
+				String[] strs = respStr.split("&");
+				Map<String,String> map = new HashMap<String, String>();
+				for(String s:strs){
+					map.put(s.split("=")[0], s.split("=")[1]);
+				}
+				if(map.get("RspCd")!=null && "DJ0000".equals(map.get("RspCd"))){
+					return true;
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * 根据手机号获取订单
+	 */
+	public void getOrderByMobile(){
+		reqBean = received();
+		if (reqBean != null) {
+			respBean.setRespCd("202000");
+			respBean.setRespDesc("处理成功");
+			TIvrOrderInf orderInf = orderService.getOrderByMobile(reqBean.getMobile());
+			if(null!=orderInf){
+				String status = orderInf.getORDER_ST();
+				respBean.setOrderSt(status);
+				if(TDataDictConst.IVR_ORDER_PAY_SUCCESS.equals(status)||TDataDictConst.IVR_ORDER_PAY_FAIL.equals(status)){
+					orderService.updateOrderSt(orderInf.getROW_ID(),TDataDictConst.IVR_ORDER_PAY_OVER);//修改订单至结束状态
+				}
+			}else{
+				respBean.setOrderSt("-1");
+			}
+		}
+		this.writeMsg(Object2Xml.object2xml(respBean, IvrContractRespBean.class));
+	}
+
+	/**
 	 * 订单支付
-	 * 
 	 * @throws Exception
 	 */
 	public void orderPay() throws Exception {
@@ -214,24 +265,6 @@ public class IvrContractReqAction extends BaseAction {
 		this.writeMsg(Object2Xml.object2xml(respBean,IvrContractRespBean.class));
 	}
 	
-	/**
-	 * 解密vpc报文
-	 */
-	public void vpcCrypt(){
-		reqBean = received();
-		if (reqBean != null) {
-			String result = VPCDecodeUtil.doCrypt(reqBean.getFlag(), reqBean.getVpcInfo());
-			String tempStr = "XXXXX";
-			respBean.setRespCd("202000");
-			respBean.setRespDesc("处理成功");
-			respBean.setVpcInfo(tempStr);
-			String respXml = Object2Xml.object2xml(respBean, IvrContractRespBean.class);
-			this.writeMsg(respXml.replace(tempStr, result));
-		}else{
-			this.writeMsg(Object2Xml.object2xml(respBean, IvrContractRespBean.class));
-		}
-	}
-
 	/**
 	 * 接收请求并且验签
 	 * 
