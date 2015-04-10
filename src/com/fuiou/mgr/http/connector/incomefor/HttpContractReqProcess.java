@@ -55,6 +55,7 @@ public class HttpContractReqProcess implements HttpReqProcessInterface {
 				return msgs2Xml(TDataDictConst.CUSTMR_BUSI_INVALID);
 			}else{
 				for(TCustmrBusi custmrBusi:verifyAbledList){
+					custmrBusi.setSrcChnl(CustmrBusiValidator.SRC_CHNL_DSF);
 					custmrBusi = custmrBusiContractUtil.addCustmrBusi(custmrBusi);
 					msgs.add(custmrBusiContractUtil.getResultInfo(custmrBusi));
 				}
