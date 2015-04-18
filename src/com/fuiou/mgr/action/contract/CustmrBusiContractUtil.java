@@ -1,13 +1,19 @@
 package com.fuiou.mgr.action.contract;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 
 import com.fuiou.mer.model.TCustmrBusi;
+import com.fuiou.mer.model.TOperatorInf;
+import com.fuiou.mer.model.TSysOperatLog;
+import com.fuiou.mer.service.SysOperatLogService;
 import com.fuiou.mer.service.TCustmrBusiService;
 import com.fuiou.mer.service.TSeqService;
 import com.fuiou.mer.util.BpsUtilBean;
@@ -16,8 +22,10 @@ import com.fuiou.mer.util.DateUtils;
 import com.fuiou.mer.util.FuMerUtil;
 import com.fuiou.mer.util.MemcacheUtil;
 import com.fuiou.mer.util.SystemParams;
+import com.fuiou.mer.util.TDataDictConst;
 import com.fuiou.mgr.bps.BpsTransaction;
 import com.fuiou.mgr.util.CustmrBusiValidator;
+import com.opensymphony.xwork2.ActionContext;
 
 public class CustmrBusiContractUtil{
 	
@@ -50,6 +58,7 @@ public class CustmrBusiContractUtil{
 		}else{
 			doWebContract(custmrBusi);
 		}
+		saveOperatLog(custmrBusi);
 		TCustmrBusi busi = custmrBusiService.selectByAcntAndBusiCd(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(), custmrBusi.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(custmrBusi.getSrcChnl()));
 		return busi;
 	}
@@ -61,7 +70,6 @@ public class CustmrBusiContractUtil{
 	 */
 	private void doWebContract(TCustmrBusi custmrBusi) {
 		boolean flag = send2Bps(custmrBusi);
-//		boolean flag = true;
 		if(flag){
 			custmrBusi.setACNT_IS_VERIFY_1(VERIFY_PASS);
 			custmrBusi.setACNT_IS_VERIFY_3(VERIFY_PASS);
@@ -101,7 +109,6 @@ public class CustmrBusiContractUtil{
 	private void doAppContract(TCustmrBusi custmrBusi) {
 		TCustmrBusi busi = custmrBusiService.selectByAcntAndBusiCd(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(), custmrBusi.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_POS));
 		boolean flag = send2Bps(custmrBusi);
-//		boolean flag = true;
 		if(flag){
 			custmrBusi.setACNT_IS_VERIFY_1(VERIFY_PASS);
 			custmrBusi.setACNT_IS_VERIFY_3(VERIFY_PASS);
@@ -145,6 +152,12 @@ public class CustmrBusiContractUtil{
 				logger.debug(custmrBusi + "  "+ rows +" updated");
 			}
 		}else{
+			//如果是POS过来的且户名证件号、证件类型都不为空的情况下置为待验证，否则置为验证失败
+			if(StringUtils.isNotEmpty(custmrBusi.getUSER_NM()) && StringUtils.isNotEmpty(custmrBusi.getCREDT_TP())  && StringUtils.isNotEmpty(custmrBusi.getCREDT_NO())){
+				custmrBusi.setCONTRACT_ST(CONTRACT_ST_INIT);
+			}else{
+				custmrBusi.setCONTRACT_ST(CONTRACT_ST_INVALID);
+			}
 			insertToDB(custmrBusi);
 		}
 	}
@@ -177,7 +190,7 @@ public class CustmrBusiContractUtil{
 		custmrBusi.setCONTRACT_EXPIRE_DT(FuMerUtil.date2String(calendar.getTime(), "yyyyMMdd"));
 		try {
 			//插库
-			int rows = custmrBusiService.saveCustmrBusiInfos(Arrays.asList(custmrBusi));
+			int rows = custmrBusiService.saveCustmrBusiInfos(custmrBusi);
 			if(1==rows){
 				logger.debug("contractNo="+contractNo+" insert into db success");
 			}else{
@@ -229,5 +242,21 @@ public class CustmrBusiContractUtil{
 		}
 	}
 	
-
+	public static void saveOperatLog(TCustmrBusi custmrBusi){
+		ActionContext context = ActionContext.getContext();
+		HttpServletRequest request = (HttpServletRequest) context.get(ServletActionContext.HTTP_REQUEST);
+		HttpSession session = request.getSession();
+		TOperatorInf tOperatorInf = (TOperatorInf) session.getAttribute(TDataDictConst.OPERATOR_INF);
+		SysOperatLogService logService = new SysOperatLogService();
+		TSysOperatLog log = new TSysOperatLog();
+		log.setIP(request.getRemoteAddr());
+		log.setKEYWORD("{\"acntNo\":\""+custmrBusi.getACNT_NO()+"\",\"userNm\":\""+custmrBusi.getUSER_NM()+"\",\"mobileNo\":\""+custmrBusi.getMOBILE_NO()+"\",\"srcChnl\":\""+custmrBusi.getGROUP_ID()+"\"}");
+		log.setMCHNT_CD(custmrBusi.getMCHNT_CD());
+		log.setOPER_TYPE("CONTRACT");//签约
+		if(tOperatorInf!=null)
+			log.setREC_CRT_USR(tOperatorInf.getLOGIN_ID());
+		log.setROW_CRT_TS(new Date());
+		log.setURL(request.getRequestURL().toString());
+		logService.insertOperatLog(log);
+	}
 }
