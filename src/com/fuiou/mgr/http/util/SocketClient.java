@@ -91,27 +91,23 @@ public class SocketClient {
 			logger.info("准备发送报文,IP="+ip+";port="+port);
 			Socket socket = new Socket();
 			SocketAddress address = new InetSocketAddress(ip, port);
-			StringBuffer sb = new StringBuffer();
+			String result = null;
 			try {
 				socket.connect(address, CONNECT_TIMEOUT);
 				socket.setSoTimeout(READ_TIMEOUT);
 				OutputStream os = socket.getOutputStream();
-				InputStream is = socket.getInputStream();
-				BufferedInputStream inputStream = new BufferedInputStream(is);
-				logger.debug("outStr:"+str);
 				os.write(str.getBytes(charSet));
 				os.flush();
-				byte[] buffer = new byte[1024];
-				int len;
-			      while ((len=inputStream.read(buffer)) != -1) {  
-			         sb.append(new String(buffer, 0, len));  
-			      }  
-				logger.debug("rspStr:"+sb.toString());
+				BufferedInputStream inputStream = new BufferedInputStream(socket.getInputStream());
+				logger.debug("outStr:"+str);
+				byte[] buffer = new byte[2048];
+				int len = inputStream.read(buffer);
+				result = new String(buffer, 0, len); 
+				logger.debug("rspStr:"+result);
 				inputStream.close();
-				return sb.toString();
+				return result;
 			} catch (IOException e) {
 				e.printStackTrace();
-				return sb.toString();
 			}finally{
 				try {
 					socket.close();
@@ -119,5 +115,6 @@ public class SocketClient {
 					logger.error("socket 关闭发生异常"+e.getMessage());
 				}
 			}
+		return result;
 	}
 }
