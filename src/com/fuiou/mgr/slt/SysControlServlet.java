@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fuiou.mer.util.DatabasePropUtils;
 import com.fuiou.mer.util.SystemParams;
+import com.fuiou.mgr.http.util.SocketServer;
 import com.fuiou.mgr.util.MonitorThread;
 import com.fuiou.mgr.util.VPCDecodeUtil;
 
@@ -29,6 +30,7 @@ public class SysControlServlet extends HttpServlet {
 			initJdbcConfig();
 			initKey();
 			SystemParams.paramInit();
+			new SocketServer(8081);
 			logger.info("系统初始化完成");
 		} catch (Exception e) {
 			logger.error("系统初始化异常:", e);
