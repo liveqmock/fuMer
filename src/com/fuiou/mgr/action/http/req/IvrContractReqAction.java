@@ -15,19 +15,14 @@ import com.fuiou.mer.model.IvrContractReqBean;
 import com.fuiou.mer.model.IvrContractRespBean;
 import com.fuiou.mer.model.TCustmrBusi;
 import com.fuiou.mer.model.TIvrOrderInf;
-import com.fuiou.mer.model.TWebLog;
 import com.fuiou.mer.service.IvrOrderInfService;
 import com.fuiou.mer.service.TCustmrBusiService;
-import com.fuiou.mer.service.TWebLogService;
-import com.fuiou.mer.util.BpsUtilBean;
-import com.fuiou.mer.util.MemcacheUtil;
 import com.fuiou.mer.util.Object2Xml;
 import com.fuiou.mer.util.RegexCheckUtil;
 import com.fuiou.mer.util.SystemParams;
 import com.fuiou.mer.util.TDataDictConst;
 import com.fuiou.mgr.action.BaseAction;
 import com.fuiou.mgr.action.contract.CustmrBusiContractUtil;
-import com.fuiou.mgr.bps.BpsTransaction;
 import com.fuiou.mgr.http.util.SignatureUtil;
 import com.fuiou.mgr.http.util.SocketClient;
 import com.fuiou.mgr.util.CustmrBusiValidator;
@@ -47,7 +42,6 @@ public class IvrContractReqAction extends BaseAction {
 	private TCustmrBusiService custmrBusiService = new TCustmrBusiService();
 	private IvrOrderInfService orderService = new IvrOrderInfService();
 	private IvrContractRespBean respBean = new IvrContractRespBean();
-	private TWebLogService webLogService = new TWebLogService();
 	private IvrContractReqBean reqBean;
 	private String xml;// 请求报文
 
@@ -90,7 +84,6 @@ public class IvrContractReqAction extends BaseAction {
 	 */
 	public void isContractMobile() {
 		reqBean = received();
-		String vpcMsg = request.getParameter("");
 		if (reqBean != null) {
 			String mchntCd = reqBean.getMchntCd();
 			String mobile = reqBean.getMobile();
@@ -159,11 +152,12 @@ public class IvrContractReqAction extends BaseAction {
 	private boolean sendToVpc(TIvrOrderInf order) {
 		StringBuilder params = new StringBuilder();
 		params.append("Version=1.0.0&").append("TranTp=82&").append("TranSubTp=00&")
-		.append("ChkFlg=1000000000000000&").append("TranAmtPos=000000001000&")
+		.append("ChkFlg=1010000110000000&").append("TranAmtPos=000000001000&")
 		.append("TranCurrCd=156&").append("VPCId=00168400cd2c&")
 		.append("MchntCd="+SystemParams.getProperty("fuiouMchntCd")+"&").append("OdrId="+order.getORDER_NO()+"&")
 		.append("OdrPhoneNum="+order.getMOBILE_NO()+"&").append("PriAcct="+order.getACNT_NO()+"&")
-		.append("OdrDtTm="+order.getORDER_DT()+order.getORDER_TM()+"&").append("TransSsn="+order.getTRANS_NO());
+		.append("OdrDtTm="+order.getORDER_DT()+order.getORDER_TM()+"&").append("TransSsn="+order.getTRANS_NO()+"&")
+		.append("CstmInfo={01|"+order.getCERT_NO()+"|"+order.getUSER_NM()+"|"+order.getMOBILE_NO()+"|||}");
 		String vpcInfo = VPCDecodeUtil.doCrypt("C", params.toString());
 		vpcInfo = "User-Agent: Donjin Http 0.1\r\nCache-Control: no-cache\r\nContent-Type: text/xml;charset=UTF-8\r\nAccept: */*\r\nContent-Length: "+vpcInfo.length()+"\r\n\r\n"+vpcInfo;
 		String respStr = SocketClient.sendToVpc(SystemParams.getProperty("vpcIp"), Integer.valueOf(SystemParams.getProperty("vpcPort")), vpcInfo, "UTF-8");
@@ -215,54 +209,60 @@ public class IvrContractReqAction extends BaseAction {
 	 * @throws Exception
 	 */
 	public void orderPay() throws Exception {
-		reqBean = received();
-		if (reqBean != null) {
-			TIvrOrderInf order = orderService.getOrder(reqBean.getOrderDt(),reqBean.getOrderNo());
-			TCustmrBusi custmrBusi = custmrBusiService.selectByAcntAndBusiCd(order.getMCHNT_CD(), TDataDictConst.BUSI_CD_INCOMEFOR,order.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_WEB));
-			if (null == custmrBusi) {
-				respBean.setRespCd("202007");
-				respBean.setRespDesc("找不到待签约记录");
-			} else {
-				BpsUtilBean deductionResultBean = null,paymentResultBean = null;
-				deductionResultBean = BpsTransaction.sendToUpmp(order,reqBean);//扣款结果
-				if(BpsTransaction.SUCC_CODE.equals(deductionResultBean.getRespCode())){
-					 //如果扣款成功则立即发一笔付款
-					paymentResultBean = BpsTransaction.cupsPayment(custmrBusi,order.getORDER_AMT()+"");
-					if(BpsTransaction.SUCC_CODE.equals(paymentResultBean.getRespCode())){
-						//扣款结果入库
-						TWebLog webLogDBean = webLogService.saveWebLogD(order, deductionResultBean);//扣款结果入库
-						if (webLogDBean == null)
-							throw new Exception("insert order fail,order num is " + reqBean.getOrderNo());
-						//付款结果入库
-						webLogService.saveWebLogC(webLogDBean,paymentResultBean);
-						//根据支付结果修改协议库状态
-						 boolean flag = CustmrBusiContractUtil.VERIFY_PASS.equals(custmrBusi.getACNT_IS_VERIFY_1());//户名证件号验证状态
-						 custmrBusi.setACNT_IS_VERIFY_2(CustmrBusiContractUtil.VERIFY_PASS);//卡密验证通过
-						 custmrBusi.setGROUP_ID(CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_IVR));//更改签约方式
-						 String riskLevel = MemcacheUtil.getRiskLevel(custmrBusi.getMCHNT_CD());//低风险不需要卡密验证
-						 //在卡密验证成功的情况下只需要判定户名卡号是否验证通过
-						 if((CustmrBusiContractUtil.HIGH_RISK.equals(riskLevel)&&flag) || (CustmrBusiContractUtil.OTHER_RISK.equals(riskLevel)&&flag)){
-							 custmrBusi.setCONTRACT_ST(CustmrBusiContractUtil.CONTRACT_ST_VALID);
-						 }
-						 int rows = custmrBusiService.updateByRowId(custmrBusi);//修改协议库
-						 if(1!=rows){
-							 throw new
-							 	Exception("custmr busi update fail,custmrbuis acnt_no="+custmrBusi.getACNT_NO());
-						 }
-						 //修改掉低级别的签约状态
-						 rows = custmrBusiService.updateRowTp(custmrBusi);
-						 logger.debug(custmrBusi + "  "+ rows +" updated");
-					}else{
-						respBean.setRespCd("202012");
-						respBean.setRespDesc("卡密验证成功,退款出现异常,请联系富友人员处理");
-					}
-				}else{
-					respBean.setRespCd("202012");
-					respBean.setRespDesc("订单支付失败");
-				}
-			}
-		}
-		this.writeMsg(Object2Xml.object2xml(respBean,IvrContractRespBean.class));
+//		reqBean = received();
+//		if (reqBean != null) {
+//			TIvrOrderInf order = orderService.getOrder(reqBean.getOrderDt(),reqBean.getOrderNo());
+//			TCustmrBusi custmrBusi = custmrBusiService.selectByAcntAndBusiCd(order.getMCHNT_CD(), TDataDictConst.BUSI_CD_INCOMEFOR,order.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_WEB));
+//			if (null == custmrBusi) {
+//				respBean.setRespCd("202007");
+//				respBean.setRespDesc("找不到待签约记录");
+//			} else {
+//				BpsUtilBean deductionResultBean = null,paymentResultBean = null;
+//				deductionResultBean = BpsTransaction.sendToUpmp(order,reqBean);//扣款结果
+//				if(BpsTransaction.SUCC_CODE.equals(deductionResultBean.getRespCode())){
+//					 //如果扣款成功则立即发一笔付款
+//					paymentResultBean = BpsTransaction.cupsPayment(custmrBusi,order.getORDER_AMT()+"");
+//					if(BpsTransaction.SUCC_CODE.equals(paymentResultBean.getRespCode())){
+//						//扣款结果入库
+//						TWebLog webLogDBean = webLogService.saveWebLogD(order, deductionResultBean);//扣款结果入库
+//						if (webLogDBean == null)
+//							throw new Exception("insert order fail,order num is " + reqBean.getOrderNo());
+//						//付款结果入库
+//						webLogService.saveWebLogC(webLogDBean,paymentResultBean);
+//						//根据支付结果修改协议库状态
+//						 boolean flag = CustmrBusiContractUtil.VERIFY_PASS.equals(custmrBusi.getACNT_IS_VERIFY_1());//户名证件号验证状态
+//						 custmrBusi.setACNT_IS_VERIFY_2(CustmrBusiContractUtil.VERIFY_PASS);//卡密验证通过
+//						 custmrBusi.setGROUP_ID(CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_IVR));//更改签约方式
+//						 String riskLevel = MemcacheUtil.getRiskLevel(custmrBusi.getMCHNT_CD());//低风险不需要卡密验证
+//						 //在卡密验证成功的情况下只需要判定户名卡号是否验证通过
+//						 if((CustmrBusiContractUtil.HIGH_RISK.equals(riskLevel)&&flag) || (CustmrBusiContractUtil.OTHER_RISK.equals(riskLevel)&&flag)){
+//							 custmrBusi.setCONTRACT_ST(CustmrBusiContractUtil.CONTRACT_ST_VALID);
+//						 }
+//						 int rows = custmrBusiService.updateByRowId(custmrBusi);//修改协议库
+//						 if(1!=rows){
+//							 throw new
+//							 	Exception("custmr busi update fail,custmrbuis acnt_no="+custmrBusi.getACNT_NO());
+//						 }
+//						 //修改掉低级别的签约状态
+//						 rows = custmrBusiService.updateRowTp(custmrBusi);
+//						 logger.debug(custmrBusi + "  "+ rows +" updated");
+//					}else{
+//						respBean.setRespCd("202012");
+//						respBean.setRespDesc("卡密验证成功,退款出现异常,请联系富友人员处理");
+//					}
+//				}else{
+//					respBean.setRespCd("202012");
+//					respBean.setRespDesc("订单支付失败");
+//				}
+//			}
+//		}
+//		InputStream is = request.getInputStream();
+//		BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+//		String buffer = null;
+//        StringBuffer vpcMsg = new StringBuffer();
+//        while ((buffer = br.readLine()) != null) {
+//        	vpcMsg.append(buffer);
+//        }
 	}
 	
 	/**
