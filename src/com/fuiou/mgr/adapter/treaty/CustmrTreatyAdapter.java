@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.fuiou.mer.service.TCustmrBusiService;
 import com.fuiou.mer.service.TDataDictService;
 import com.fuiou.mer.util.TDataDictConst;
+import com.fuiou.mgr.action.contract.CustmrBusiContractUtil;
 import com.fuiou.mgr.adapter.treaty.excelupload.TreatyFileUploadInterface;
 import com.fuiou.mgr.adapter.treaty.excelupload.fileupload.ExcelXSLUpload;
 import com.fuiou.mgr.adapter.treaty.excelupload.fileupload.ExcelXSLXUpload;
@@ -82,7 +83,11 @@ public class CustmrTreatyAdapter implements TreatyInterface {
 		// 入库
 		try {
 			logger.error("开始入库");
-			int i = custmrBusiService.saveCustmrBusiInfos(tCustmrBusis);
+			int i =0 ;
+			for(TCustmrBusi custmrBusi:tCustmrBusis){
+				i += custmrBusiService.saveCustmrBusiInfos(custmrBusi);
+				CustmrBusiContractUtil.saveOperatLog(custmrBusi);
+			}
 			if (i > 0) {
 				logger.error(TDataDictConst.SUCCEED + "|" + "入库成功");
 				errorResult.add(TDataDictConst.UNSUCCESSFUL + "|" + "操作成功");
