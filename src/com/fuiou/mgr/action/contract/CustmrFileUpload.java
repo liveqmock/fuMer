@@ -5,11 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fuiou.mer.util.MemcacheUtil;
-import com.fuiou.mer.util.SystemParams;
 import com.fuiou.mer.util.TDataDictConst;
 import com.fuiou.mgr.action.BaseAction;
 import com.fuiou.mgr.adapter.treaty.TreatyAdapter;
@@ -18,7 +15,6 @@ import com.fuiou.mgr.bean.access.FileAccess;
 
 public class CustmrFileUpload extends BaseAction{
 	private static final long serialVersionUID = -6509503025976083614L;
-	private static Logger logger = LoggerFactory.getLogger(CustmrFileUpload.class);
 	/**文件*/
 	private File upload;
 	/** 文件名称 */
