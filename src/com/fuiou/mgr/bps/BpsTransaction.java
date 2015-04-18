@@ -13,6 +13,7 @@ import com.fuiou.mer.util.SystemParams;
 import com.fuiou.mgr.http.util.SocketClient;
 import com.fuiou.ssn.service.SsnGenerator;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.core.util.Base64Encoder;
 
 public class BpsTransaction {
 	
@@ -120,19 +121,20 @@ public class BpsTransaction {
 	 * @param custmrBusi
 	 * @return
 	 */
-	public static BpsUtilBean sendToUpmp(TIvrOrderInf order,IvrContractReqBean reqBean) {
+	public static BpsUtilBean sendToUpmp(TIvrOrderInf order,String pin) {
 		BpsUtilBean bean = new BpsUtilBean();
 		BpsUtilBean resultBean = null;
+		String tempStr = "XXXXXXXXXXXXX";
 		try{
-			order.setACNT_NO("6226650600901588");//测试卡号
+			order.setACNT_NO(order.getACNT_NO());
 			String currentDt = FuMerUtil.getCurrTime("yyyyMMdd");
 			bean.setTranCd("YMDK");
 			bean.setDestInsCd(SystemParams.getProperty("upmpInsCd"));//发往银联
 			bean.setChannelId(CHANNEL_ID);
 			bean.setPriority("3");
 			bean.setTransNo(SsnGenerator.getSsn(bean.getDestInsCd()));
-			bean.setTranAmt(order.getORDER_AMT()+"");
-//			bean.setTranAmt("1");//测试金额
+//			bean.setTranAmt(order.getORDER_AMT()+"");
+			bean.setTranAmt("1");//测试金额
 			bean.setReqDate(currentDt);
 			bean.setAgreeNo("");//签约号
 			bean.setDestSsn(bean.getTransNo());
@@ -143,14 +145,13 @@ public class BpsTransaction {
 			bean.setCVN2("");
 			bean.setVaildDate("");
 			bean.setMobileNo(order.getMOBILE_NO());
-			bean.setInf(reqBean.getPin());//密码
-//			bean.setInf("ezAxfDM3MDY4MTE5ODkxMjAxMTgxMnzpgITplJ98MTg1MDE2MjU5NTB8fEt6cmpFYzFCbUtsb1JvUkdNK1EwWk5hVWNFOVVpWFdUVFh0NlhYTU1qN25NbGxLUE9NNFZwN0ZtOHlrZkRVTHNxTDV2TVpQanNYZmV2Y1Vta21JKzBzN2RzTmRkTDNoY0RNbmN1YzNRbzhxdFUrLzI2Rk1uTVpXaTNxTVo3OXVlYWJKZDlhZ0ZwVVlWRlRleEl2TllXSFF2NDN2N2tKdE5WN1FUcmhKVjkrbz18fH0=");//测试密码
-//			String md5Src = bean.getDestInsCd()+bean.getReqDate()+bean.getDestSsn()+bean.getTranAmt()+SystemParams.getProperty("bpsKey");
-//			bean.setMD5(MD5Util.encode(md5Src, null));
+			bean.setInf(tempStr);//密码
+//正确		bean.setInf("ezAxfDM0MDgwMjE5NzgxMDIyMDAxMHzmn6XmmZPls7B8MTU4MDE4MDgwODR8fHhZYWF1bklBeS9qM2hnNlZmTUR2bGY3YjRsUEtJVi9iaE9zbzNjS0kzMmVGRGtvbHJDb01ha3VEVTdnc3BWbDVTZ2ZZTEFyOUtRUXYyWDdaTm9DaGhiZTM1Z2NUc3RsQWFCaXI5bWZUVkpNSFE3NFE5SnN5dUFGa3pNM3BZNjVkTm1WOEl5MHJKS2ZHcm1OZlhONTVzWjZSZE1aWVAyWUFYUUV1dGxpNjRBQT18fH0=");
 			setMd5Content(bean);
 			XStream stream = new XStream();
 			stream.processAnnotations(BpsUtilBean.class);
 			String xml = stream.toXML(bean);
+			xml = xml.replace(tempStr, pin);
 			String xmlHead = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			String result = SocketClient.send(SystemParams.getProperty("bpsIp"), Integer.valueOf(SystemParams.getProperty("bpsPort")), xmlHead+xml, "utf-8", 4);
 			if(StringUtils.isNotEmpty(result)){
@@ -196,4 +197,6 @@ public class BpsTransaction {
 		md5Source.append("123456");
 		bean.setMD5(MD5Util.encode(md5Source.toString(), null));
 	}
+	
+	
 }
