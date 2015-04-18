@@ -318,17 +318,27 @@ public class VPCDecodeUtil {
 			loadPrivateKey(in_pri);
 
 //			String src = "CstmInfo={01|3623231989|123||123456||}&EnCdMd=UTF-8&MchntCd=602020000001123&OdrDtTm=20141103144700&OdrId=123456789&OdrPhoneNum=1821254557&PosRes=123456&PriAcct=6226987456321231&TranAmtPos=000000000001&TranCurrCd=156&TranSubTp=00&TransSsn=12345678&TranTp=82&Version=1.0.0&VPCId=00168400cb13&MsgSign=kESDbdFeByc2TQVGDdbi0WAgRDMJ0EgakUm1fIG+xxbKi7t4rjevf3C6VsgPdjQ7U9emCuA3F57+0RhAF+IoeWBEdmb7VdOWPY9/fpPNRU663Raqzm9Vt1L63uTR+hdG1DTeZq/siJteQ+sOhL/lfmxOVsV9WIrL86GLsNaE/Vw=";
-			String out1 = "7CulMeD9zpztHmWXdcYgIGHllQuvM/vgKjv9Im6D4u27CpkAjRzZgCKA5XujuYrU"+
-							"qKA4CTlwdG3s3OtHpGeC3QdMbJGbSh5rB0xskZtKHmu0AhPLRiAy9QLAHk3SV+5j"+
-							"dTjQmOy5VyOoz/C0jeO/duyhs+mYxXfvZxEFTbO8bRIuvNlBUwqDazoroh2lXI2N"+
-							"FUr7vH8bH/UyqYeC3XZMQQdMbJGbSh5r6Ts2YQuVy8JzoBenVi5y6HYft+GYWID4"+
-							"VXg1I8S6ZdR/QpPWpwGZFaHLAX/fF4izE//CRMhYgAVriAzEm6Y+abPmQPrUgU9c"+
-							"9UKh9Q1vWKvdc9fckxmzDK2ksSjKexJQwUTzHQVTAsvulzQeGNCn2cJ7+my/fJGn&NG56RdX/LxslBSfal5+W/9dQI21VuGDr4p8GV4pdRBPDMUrBji1ZPCD8F4eq8qJr"+
-							"nPliAlb/HdjdmmVGgrnnj+ELRLW8xqnPfsRnsqXdDEdxMDMPk2RF5lSnnkLmCovB"+
-							"LMRZfSULhLirIYjYVobk23/VvaJnbF3GLkpmpxpoaub+9vyRpx69YjrKKOYSRPri"+
-							"qD1qHw+8T1BwtZBVrBjbJ2qdBdflqAC0Ogq31+bNETfp6kCXX6yHl+howvA2JzNN"+
-							"/w1j82HWq6kp6FViKadBfhlqoUp9Kp2Ipu0oxUidwiUAjkHYSuAPpW1GgOQfIwJB"+
-							"/F1VkR7t/kyl5+5Djd/aOg==";
+			String out1 = "oZ+KH4ZlFx0eLMNIpLrG0k+OqQSsVnh8AOFh7mFS0veWRcrSVRz7xOGqwMIaK+Lf"+
+							"CExwNHHorThFLcPRajdL9fMmpqZ7ulMiWqoDyX4p6uYorTb43bEr7NzR0zVuiA6E"+
+							"rLkD/rFYguIyIbPmgKC0p8IIhoBPFd5rBx/F3xzdT/f48ajaiK70o2KQpg5k6OnU"+
+							"Tc0DXkfjs1Ug6QMevIz8Px/gxteV6qeQnI8/6pDJ/RdpuM8eOYjM29GFhEFkZxIG"+
+							"HyWqjSnMov/OlTDTrYMhqTjmGoJOOenu2vmxxiHuvSrfWc3kktk+HI01BcSVtubZ"+
+							"m7ceTGNdDhMdKMZUYpWNA1kA7x/nOhpc4pqNREBFk7+TSp7TYlfdbrXZLMbQk00U"+
+							"pneKODPif/puVl6yFJWS4ZJebH2F3mRg0MikbiRAQURabgfoOgokCZCe4aHv3SZa"+
+							"EPWpbw0S9RAVjQgD+1y2yG1U2P0XGB8DqHYqZUVagIbrr0wSjNFF2J4uRd/ZWHoo"+
+							"ONVvgPwcUk6+3BW7sK2oRvhPypB3gBr7EPxv0gZvUNtGyefNjAIvHKth84xgtwd0"+
+							"pVNUi8GTkVgnBfmjHq/LSf++ljShlqF6XINC+s7OAiIurgFjIqYbZ9Y0/seaVNcv"+
+							"//7nTRg3sl7AzCG/lKKMYK/R5XqmjOWBWCruOzaBhMY9SgJfoGYhhvo9X3m73CY6"+
+							"1HPOaILQnrRh0nUd19QGlaADyG1O0VBycGKkOWPA3KHRkUNWJMEfCTH2cfRMAY9P"+
+							"NOzUgh8jNEKuDUt1y+qFa6BSxxj3W2ivY06Hkj0rWPRU/YNmZ75e8AvvLWhQP7UD"+
+							"9dLmu2XQOGYqdAxJyLviJvQ5/SsviKxERMNePZX+SWPpzM8hWsfRIf/lw5xyFUi3"+
+							"Zhr8CaDO8c02iQwmiLigS6BwcxtoR/QgiBE5lt6whwh+SDxcG0HTE7V++ipukSvD"+
+							"Z6rlisl4A462q7pL1mbUfdDz5epb7AIJ6oFBtk1BkNU0ZsItixxKjGbYJTuus7cK&cPFtifdLE3wx8XFhUyCjN+m27acPgOgPjREToLT3r3iWEhWiX3NLyYSEzcowqFEZ"+
+							"ezrZl6aq6rjhk66IDKNxPih960XYiKU5ggoVn8hNjfaG3YB4dV4URtqm+pm0TU1b"+
+							"q3loPb3WXs4OMoJFjKdq+mMMwbIaeZrFGljzDa7cFd7fYv43oDvmYgSuYiKjzgga"+
+							"RIzvwQThfHitAbpBbk9UKH7bcEJUhAu/uy0z2B3RS0gGCtqVWRv/xPEwJ4HnOdF8"+
+							"eB9vba5moZBNssYdRBRTFlwhKhCqQiTacth67EMJDIIUWEOavHopT/qCqA7fgZg1"+
+							"hBttso+oS9WA/53pG+h6kw==";
 //			String out1 = encrypt(src, publicKey);
 			String dest = decrypt(out1, privateKey);
 //			System.out.println("Encode Result:" + out1);
