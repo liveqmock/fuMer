@@ -36,6 +36,7 @@ public class CustmrBusiValidator {
 	public static final String VALIDATE_CNT_TOO_MUCH = "300014";
 	public static final String CONTRACT_TYPE_LOWER = "300015";
 	public static final String CONTRACT_IS_VALID = "300016";
+	public static final String PIN_IS_PASS = "300017";
 	//签约来源
 	public static final String SRC_CHNL_POS = "POS";//POS签约
 	public static final String SRC_CHNL_APP = "APP";//APP签约
@@ -59,6 +60,7 @@ public class CustmrBusiValidator {
 		errorCodeMap.put(VALIDATE_CNT_TOO_MUCH, "当日总验证次数超限");
 		errorCodeMap.put(CONTRACT_TYPE_LOWER, "已存在更高级别的签约记录");
 		errorCodeMap.put(CONTRACT_IS_VALID, "签约记录已生效");
+		errorCodeMap.put(PIN_IS_PASS, "卡密已经生效,不允许APP签约");
 		
 		srcChnlMap.put(SRC_CHNL_POS, 5);
 		srcChnlMap.put(SRC_CHNL_APP, 15);
@@ -79,6 +81,12 @@ public class CustmrBusiValidator {
 		TCustmrBusi busi = custmrBusiService.selectByAcntAndBusiCd(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(), custmrBusi.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(custmrBusi.getSrcChnl()));
 		if(null!=busi&&CustmrBusiContractUtil.CONTRACT_ST_VALID.equals(busi.getCONTRACT_ST())){
 			resultMap.put(CONTRACT_IS_VALID, errorCodeMap.get(CustmrBusiValidator.CONTRACT_IS_VALID));
+			return resultMap;
+		}
+		//如果APP签约则判断卡密是否已经通过,如果已经通过不允许签约
+		if(SRC_CHNL_APP.equals(custmrBusi.getSrcChnl()) && busi!=null && busi.getACNT_IS_VERIFY_2().equals(CustmrBusiContractUtil.VERIFY_PASS)){
+			resultMap.put(PIN_IS_PASS, errorCodeMap.get(PIN_IS_PASS));
+			return resultMap;
 		}
 		if(!TDataDictConst.BUSI_CD_INCOMEFOR.equals(custmrBusi.getBUSI_CD())){
 			resultMap.put(FORMAT_ERR, "业务代码"+custmrBusi.getBUSI_CD()+"不被支持");
@@ -88,7 +96,7 @@ public class CustmrBusiValidator {
 			resultMap.put(FORMAT_ERR, "银行代码"+custmrBusi.getBANK_CD()+"不被支持");
 			return resultMap;
 		}
-		if(StringUtils.isEmpty(custmrBusi.getUSER_NM())){
+		if(StringUtils.isEmpty(custmrBusi.getUSER_NM())  && !SRC_CHNL_POS.equals(custmrBusi.getSrcChnl())){
 			resultMap.put(FORMAT_ERR, "客户姓名不能为空");
 			return resultMap;
 		}
@@ -106,17 +114,20 @@ public class CustmrBusiValidator {
 			resultMap.put(RISK_LEVEL_ERR, errorCodeMap.get(RISK_LEVEL_ERR));
 			return resultMap;
 		}
-		if(!Arrays.asList(creditTps).contains(custmrBusi.getCREDT_TP())){
+		if(!Arrays.asList(creditTps).contains(custmrBusi.getCREDT_TP()) && !SRC_CHNL_POS.equals(custmrBusi.getSrcChnl())){
 			resultMap.put(FORMAT_ERR, "证件类型"+custmrBusi.getCREDT_TP()+"不合法");
 			return resultMap;
 		}
-		if(StringUtils.isEmpty(custmrBusi.getCREDT_NO())){
+		if(StringUtils.isEmpty(custmrBusi.getCREDT_NO()) && !SRC_CHNL_POS.equals(custmrBusi.getSrcChnl())){
 			resultMap.put(FORMAT_ERR, "证件号码不能为空");
 			return resultMap;
 		}
-		if((creditTps[0].equals(custmrBusi.getCREDT_TP()) && !"YES".equals(IDCardValidateUtil.IDCardValidate(custmrBusi.getCREDT_NO()))) || (!creditTps[0].equals(custmrBusi.getCREDT_TP()) && !RegexCheckUtil.checkZhengjian(custmrBusi.getCREDT_NO()))){
-			resultMap.put(FORMAT_ERR, "证件号码"+custmrBusi.getCREDT_NO()+"不合法");
-			return resultMap;
+		//如果证件号不为空的情况则需要验证证件号的合法性
+		if(StringUtils.isNotEmpty(custmrBusi.getCREDT_NO())){
+			if((creditTps[0].equals(custmrBusi.getCREDT_TP()) && !"YES".equals(IDCardValidateUtil.IDCardValidate(custmrBusi.getCREDT_NO()))) || (!creditTps[0].equals(custmrBusi.getCREDT_TP()) && !RegexCheckUtil.checkZhengjian(custmrBusi.getCREDT_NO()))){
+				resultMap.put(FORMAT_ERR, "证件号码"+custmrBusi.getCREDT_NO()+"不合法");
+				return resultMap;
+			}
 		}
 		if(!RegexCheckUtil.checkACount(custmrBusi.getACNT_NO())){
 			resultMap.put(FORMAT_ERR, "卡号格式不对");
@@ -143,11 +154,6 @@ public class CustmrBusiValidator {
 		}
 		if(!checkVerifyLimit()){
 			resultMap.put(VALIDATE_CNT_TOO_MUCH, errorCodeMap.get(VALIDATE_CNT_TOO_MUCH));
-			return resultMap;
-		}
-		//验证是否有更高级的签约方式存在
-		if(custmrBusiService.findOtherTypes(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(),custmrBusi.getACNT_NO(),srcChnlMap.get(custmrBusi.getSrcChnl()))>0){
-			resultMap.put(CONTRACT_TYPE_LOWER, errorCodeMap.get(CONTRACT_TYPE_LOWER));
 			return resultMap;
 		}
 		return resultMap;
