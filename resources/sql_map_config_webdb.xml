@@ -28,4 +28,5 @@
 	</transactionManager>
 	<sqlMap resource="com/fuiou/mer/model/sql/ibatorcommon_SqlMap.xml" />
     <sqlMap resource="com/fuiou/mer/model/sql/T_WEB_LOG_SqlMap.xml"/>
+    <sqlMap resource="com/fuiou/mer/model/sql/T_MCHNT_IP_CONFIG_SqlMap.xml"/>
 </sqlMapConfig>
