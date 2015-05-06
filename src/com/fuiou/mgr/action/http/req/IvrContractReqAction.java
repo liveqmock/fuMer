@@ -127,17 +127,15 @@ public class IvrContractReqAction extends BaseAction {
 				respBean.setRespCd("202012");
 				respBean.setRespDesc("签约未生效");
 			}else{
-				IvrOrderInfService orderService = new IvrOrderInfService();
-				TIvrOrderInf order = orderService.insertNewOrder(reqBean,custmrBusi);
-				if(null!=order){
-					boolean isSentOk = sendToVpc(order);//将订单信息封装并且发送给VPC
-					if(isSentOk){
-						respBean.setRespCd("202000");
-						respBean.setRespDesc("订单信息发送成功");
-					}
-				}else{
-					respBean.setRespCd("202012");
-					respBean.setRespDesc("订单信息发送失败");
+				TIvrOrderInf order = orderService.getOrderByMobile(reqBean.getMobile());//根据手机号码获取订单信息
+				if(order==null || order.getVERIFY_CNT()==0){
+					IvrOrderInfService orderService = new IvrOrderInfService();
+					order = orderService.insertNewOrder(reqBean,custmrBusi);
+				}
+				boolean isSentOk = sendToVpc(order);//将订单信息封装并且发送给VPC
+				if(isSentOk){
+					respBean.setRespCd("202000");
+					respBean.setRespDesc("订单信息发送成功");
 				}
 			}
 		}
@@ -194,11 +192,44 @@ public class IvrContractReqAction extends BaseAction {
 			if(null!=orderInf){
 				String status = orderInf.getORDER_ST();
 				respBean.setOrderSt(status);
-				if(TDataDictConst.IVR_ORDER_PAY_SUCCESS.equals(status)||TDataDictConst.IVR_ORDER_PAY_FAIL.equals(status)){
-					orderService.updateOrderSt(orderInf.getROW_ID(),TDataDictConst.IVR_ORDER_PAY_OVER);//修改订单至结束状态
+				if(orderInf.getVERIFY_CNT()>0){
+					respBean.setContFlag("Y");
+					respBean.setFlag(orderInf.getCONTRACT_FLAG());
+					respBean.setAcntNo(orderInf.getACNT_NO());
+					respBean.setMchntCd(orderInf.getMCHNT_CD());
+				}else{
+					respBean.setContFlag("N");
+					respBean.setFlag(orderInf.getCONTRACT_FLAG());
+					respBean.setAcntNo(orderInf.getACNT_NO());
+					respBean.setMchntCd(orderInf.getMCHNT_CD());
 				}
 			}else{
 				respBean.setOrderSt("-1");
+				respBean.setContFlag("Y");
+			}
+		}
+		this.writeMsg(Object2Xml.object2xml(respBean, IvrContractRespBean.class));
+	}
+	
+	/**
+	 * 挂断通知
+	 */
+	public void hangup(){
+		reqBean = received();
+		if (reqBean != null) {
+			TIvrOrderInf orderInf = orderService.getOrderByMobile(reqBean.getMobile());
+			if(null!=orderInf){
+				int i = orderService.updateOrderSt(orderInf.getROW_ID(), TDataDictConst.IVR_ORDER_PAY_OVER, 0);
+				if(1==i){
+					respBean.setRespCd("202000");
+					respBean.setRespDesc("处理成功");
+				}else{
+					respBean.setRespCd("202001");
+					respBean.setRespDesc("挂断失败");
+				}
+			}else{
+				respBean.setRespCd("202001");
+				respBean.setRespDesc("未找到订单");
 			}
 		}
 		this.writeMsg(Object2Xml.object2xml(respBean, IvrContractRespBean.class));
@@ -209,60 +240,6 @@ public class IvrContractReqAction extends BaseAction {
 	 * @throws Exception
 	 */
 	public void orderPay() throws Exception {
-//		reqBean = received();
-//		if (reqBean != null) {
-//			TIvrOrderInf order = orderService.getOrder(reqBean.getOrderDt(),reqBean.getOrderNo());
-//			TCustmrBusi custmrBusi = custmrBusiService.selectByAcntAndBusiCd(order.getMCHNT_CD(), TDataDictConst.BUSI_CD_INCOMEFOR,order.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_WEB));
-//			if (null == custmrBusi) {
-//				respBean.setRespCd("202007");
-//				respBean.setRespDesc("找不到待签约记录");
-//			} else {
-//				BpsUtilBean deductionResultBean = null,paymentResultBean = null;
-//				deductionResultBean = BpsTransaction.sendToUpmp(order,reqBean);//扣款结果
-//				if(BpsTransaction.SUCC_CODE.equals(deductionResultBean.getRespCode())){
-//					 //如果扣款成功则立即发一笔付款
-//					paymentResultBean = BpsTransaction.cupsPayment(custmrBusi,order.getORDER_AMT()+"");
-//					if(BpsTransaction.SUCC_CODE.equals(paymentResultBean.getRespCode())){
-//						//扣款结果入库
-//						TWebLog webLogDBean = webLogService.saveWebLogD(order, deductionResultBean);//扣款结果入库
-//						if (webLogDBean == null)
-//							throw new Exception("insert order fail,order num is " + reqBean.getOrderNo());
-//						//付款结果入库
-//						webLogService.saveWebLogC(webLogDBean,paymentResultBean);
-//						//根据支付结果修改协议库状态
-//						 boolean flag = CustmrBusiContractUtil.VERIFY_PASS.equals(custmrBusi.getACNT_IS_VERIFY_1());//户名证件号验证状态
-//						 custmrBusi.setACNT_IS_VERIFY_2(CustmrBusiContractUtil.VERIFY_PASS);//卡密验证通过
-//						 custmrBusi.setGROUP_ID(CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_IVR));//更改签约方式
-//						 String riskLevel = MemcacheUtil.getRiskLevel(custmrBusi.getMCHNT_CD());//低风险不需要卡密验证
-//						 //在卡密验证成功的情况下只需要判定户名卡号是否验证通过
-//						 if((CustmrBusiContractUtil.HIGH_RISK.equals(riskLevel)&&flag) || (CustmrBusiContractUtil.OTHER_RISK.equals(riskLevel)&&flag)){
-//							 custmrBusi.setCONTRACT_ST(CustmrBusiContractUtil.CONTRACT_ST_VALID);
-//						 }
-//						 int rows = custmrBusiService.updateByRowId(custmrBusi);//修改协议库
-//						 if(1!=rows){
-//							 throw new
-//							 	Exception("custmr busi update fail,custmrbuis acnt_no="+custmrBusi.getACNT_NO());
-//						 }
-//						 //修改掉低级别的签约状态
-//						 rows = custmrBusiService.updateRowTp(custmrBusi);
-//						 logger.debug(custmrBusi + "  "+ rows +" updated");
-//					}else{
-//						respBean.setRespCd("202012");
-//						respBean.setRespDesc("卡密验证成功,退款出现异常,请联系富友人员处理");
-//					}
-//				}else{
-//					respBean.setRespCd("202012");
-//					respBean.setRespDesc("订单支付失败");
-//				}
-//			}
-//		}
-//		InputStream is = request.getInputStream();
-//		BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-//		String buffer = null;
-//        StringBuffer vpcMsg = new StringBuffer();
-//        while ((buffer = br.readLine()) != null) {
-//        	vpcMsg.append(buffer);
-//        }
 	}
 	
 	/**
@@ -310,4 +287,6 @@ public class IvrContractReqAction extends BaseAction {
 		printWriter.write(rspXml);
 		printWriter.close();
 	}
+	
+	
 }
