@@ -13,7 +13,6 @@ import com.fuiou.mer.util.SystemParams;
 import com.fuiou.mgr.http.util.SocketClient;
 import com.fuiou.ssn.service.SsnGenerator;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.core.util.Base64Encoder;
 
 public class BpsTransaction {
 	
@@ -146,7 +145,6 @@ public class BpsTransaction {
 			bean.setVaildDate("");
 			bean.setMobileNo(order.getMOBILE_NO());
 			bean.setInf(tempStr);//密码
-//正确		bean.setInf("ezAxfDM0MDgwMjE5NzgxMDIyMDAxMHzmn6XmmZPls7B8MTU4MDE4MDgwODR8fHhZYWF1bklBeS9qM2hnNlZmTUR2bGY3YjRsUEtJVi9iaE9zbzNjS0kzMmVGRGtvbHJDb01ha3VEVTdnc3BWbDVTZ2ZZTEFyOUtRUXYyWDdaTm9DaGhiZTM1Z2NUc3RsQWFCaXI5bWZUVkpNSFE3NFE5SnN5dUFGa3pNM3BZNjVkTm1WOEl5MHJKS2ZHcm1OZlhONTVzWjZSZE1aWVAyWUFYUUV1dGxpNjRBQT18fH0=");
 			setMd5Content(bean);
 			XStream stream = new XStream();
 			stream.processAnnotations(BpsUtilBean.class);
