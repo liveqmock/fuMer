@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import com.fuiou.mer.model.TCustmrBusi;
 import com.fuiou.mer.service.TCustmrBusiService;
 import com.fuiou.mer.util.MemcacheUtil;
-import com.fuiou.mer.util.SystemParams;
 import com.fuiou.mgr.action.contract.CustmrBusiContractUtil;
 
 /**
@@ -29,6 +28,9 @@ public class CustmrBusiVerifyWoker implements Runnable {
 	@Override
 	public void run() {
 		logger.debug("user_nm:"+custmrBusi.getUSER_NM()+";acnt_no:"+custmrBusi.getACNT_NO()+";cert_no:"+custmrBusi.getCREDT_NO()+";acnt_is_verify_1:"+custmrBusi.getACNT_IS_VERIFY_1()+";acnt_is_verify_2:"+custmrBusi.getACNT_IS_VERIFY_2()+";acnt_is_verify_3:"+custmrBusi.getACNT_IS_VERIFY_3());
+		if(!MemcacheUtil.cupsVerifyCnt(custmrBusi.getMCHNT_CD(), custmrBusi.getACNT_NO())){
+			return ;
+		}
 		String riskLevel = MemcacheUtil.getRiskLevel(custmrBusi.getMCHNT_CD());
 		boolean flag = CustmrBusiContractUtil.send2Bps(custmrBusi);
 		if(flag){
