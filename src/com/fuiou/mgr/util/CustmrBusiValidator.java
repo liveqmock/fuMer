@@ -3,7 +3,6 @@ package com.fuiou.mgr.util;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -13,7 +12,6 @@ import com.fuiou.mer.model.TCardBin;
 import com.fuiou.mer.model.TCustmrBusi;
 import com.fuiou.mer.service.TCustmrBusiService;
 import com.fuiou.mer.util.CardUtil;
-import com.fuiou.mer.util.FuMerUtil;
 import com.fuiou.mer.util.MemcacheUtil;
 import com.fuiou.mer.util.RegexCheckUtil;
 import com.fuiou.mer.util.SystemParams;
@@ -57,7 +55,7 @@ public class CustmrBusiValidator {
 		errorCodeMap.put(MCHNT_NOT_EXIST, "商户不存在");
 		errorCodeMap.put(SRC_CHNL_ERR, "签约来源未定义");
 		errorCodeMap.put(MOBILE_NO_ERR, "手机号已绑定多张银行卡");
-		errorCodeMap.put(VALIDATE_CNT_TOO_MUCH, "当日总验证次数超限");
+		errorCodeMap.put(VALIDATE_CNT_TOO_MUCH, "当日验证次数超限");
 		errorCodeMap.put(CONTRACT_TYPE_LOWER, "已存在更高级别的签约记录");
 		errorCodeMap.put(CONTRACT_IS_VALID, "签约记录已生效");
 		errorCodeMap.put(PIN_IS_PASS, "卡密已经生效,不允许APP签约");
@@ -137,42 +135,33 @@ public class CustmrBusiValidator {
 		if(cardBin==null){
 			resultMap.put(FORMAT_ERR, "未找到卡bin");
 			return resultMap;
+		}else{
+			String insCd = CardUtil.getIssCdByCardNo(custmrBusi.getACNT_NO(), SystemParams.cardBinMap);
+			if(!"105".equals(insCd.substring(3, 6))){//非建行卡要做每日验证次数校验
+				if(!MemcacheUtil.cupsVerifyCnt(custmrBusi.getMCHNT_CD(), custmrBusi.getACNT_NO())){
+					resultMap.put(VALIDATE_CNT_TOO_MUCH, errorCodeMap.get(VALIDATE_CNT_TOO_MUCH));
+					return resultMap;
+				}
+			}
 		}
 		if(!"01".equals(cardBin.getCARD_ATTR())){
 			resultMap.put(FORMAT_ERR, "暂不支持非借记卡");
 			return resultMap;
 		}
-		if(!RegexCheckUtil.checkMobile(custmrBusi.getMOBILE_NO())){
+		if(!RegexCheckUtil.checkMobile(custmrBusi.getMOBILE_NO()) && !SRC_CHNL_POS.equals(custmrBusi.getSrcChnl())){
 			resultMap.put(FORMAT_ERR, "手机号码"+custmrBusi.getMOBILE_NO()+"不合法");
 			return resultMap;
-		}else{
+		}
+		if(StringUtils.isNotEmpty(custmrBusi.getMOBILE_NO())){
 			Integer cnt = custmrBusiService.findByMobile(custmrBusi.getMCHNT_CD(), custmrBusi.getMOBILE_NO(), custmrBusi.getBUSI_CD(), Arrays.asList(custmrBusi.getACNT_NO()));
 			if(cnt>2){
 				resultMap.put(MOBILE_NO_ERR, "手机号"+custmrBusi.getMOBILE_NO()+"已绑定多张卡");
 				return resultMap;
 			}
 		}
-		if(!checkVerifyLimit()){
-			resultMap.put(VALIDATE_CNT_TOO_MUCH, errorCodeMap.get(VALIDATE_CNT_TOO_MUCH));
-			return resultMap;
-		}
 		return resultMap;
    }
 	
-	//检查当日验证总次数是否超限
-	public static boolean checkVerifyLimit(){
-			String currentDay = FuMerUtil.getCurrTime("yyyyMMdd");
-			AtomicInteger cnt = SystemParams.verifyCnt.get(currentDay);//当日已经验证的次数
-			if(cnt==null){
-				SystemParams.verifyCnt.clear();
-				SystemParams.verifyCnt.put(currentDay, new AtomicInteger(0));
-			}
-			if(SystemParams.verifyCnt.get(currentDay).get() >= Integer.parseInt(SystemParams.getProperty("verifyLimit"))){
-				logger.debug("today verify cnt too much ");
-				return false;
-			}
-			return true;
-	}
 	
 	/**
 	 * 验签
@@ -186,7 +175,7 @@ public class CustmrBusiValidator {
 		}else if(SRC_CHNL_WEB.equals(custmrBusi.getSrcChnl())){//页面发起的直接过
 			return true;
 		}else{
-			return SignatureUtil.validate(custmrBusi, "123456");//验签
+			return SignatureUtil.validate(custmrBusi, "2ba02c706f01d0a3a4f9e5c30a8f75a6");//验签
 		}
 	}
 }
