@@ -18,7 +18,6 @@ import com.fuiou.mer.service.TCustmrBusiService;
 import com.fuiou.mer.service.TSeqService;
 import com.fuiou.mer.util.BpsUtilBean;
 import com.fuiou.mer.util.CardUtil;
-import com.fuiou.mer.util.DateUtils;
 import com.fuiou.mer.util.FuMerUtil;
 import com.fuiou.mer.util.MemcacheUtil;
 import com.fuiou.mer.util.SystemParams;
@@ -233,12 +232,7 @@ public class CustmrBusiContractUtil{
 			return BpsTransaction.ccbValidate(custmrBusi);//建行签约接口
 		}else{
 			BpsUtilBean ressultBean = BpsTransaction.cupsPayment(custmrBusi,"1");//代发一分钱
-			if(BpsTransaction.SUCC_CODE.equals(ressultBean.getRespCode())){
-				SystemParams.verifyCnt.get(DateUtils.getCurrentDate()).incrementAndGet();
-				return true;
-			}else{
-				return false;
-			}
+			return BpsTransaction.SUCC_CODE.equals(ressultBean.getRespCode());
 		}
 	}
 	
