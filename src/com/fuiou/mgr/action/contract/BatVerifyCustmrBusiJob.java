@@ -10,7 +10,6 @@ import org.quartz.JobExecutionException;
 import com.fuiou.mer.model.TCustmrBusi;
 import com.fuiou.mer.service.TCustmrBusiService;
 import com.fuiou.mer.util.SystemParams;
-import com.fuiou.mgr.util.CustmrBusiValidator;
 import com.fuiou.mgr.util.CustmrBusiVerifyWoker;
 
 /**
@@ -25,9 +24,6 @@ public class BatVerifyCustmrBusiJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		if(!CustmrBusiValidator.checkVerifyLimit()){
-			return ;
-		}
 		List<TCustmrBusi> custmrBusies = custmrBusiService.getInvalidCustmrBusi();//获取待验证的协议库记录
 		logger.debug("return result total rows:"+custmrBusies.size());
 		if(custmrBusies!=null&&custmrBusies.size()>0){
