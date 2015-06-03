@@ -16,6 +16,7 @@ import com.fuiou.mer.service.TApsTxnLogService;
 import com.fuiou.mer.service.TCustStlInfService;
 import com.fuiou.mer.service.TDataDictService;
 import com.fuiou.mer.service.TFileInfService;
+import com.fuiou.mer.service.TSeqService;
 import com.fuiou.mer.util.FasService;
 import com.fuiou.mer.util.FuMerUtil;
 import com.fuiou.mer.util.StringUtils;
@@ -265,8 +266,8 @@ public class PayforReviewAction extends ActionSupport {
 			logger.error("===========mchntCd :"+mchntCd+"=====  balance is not enough==========");
 		}else{
 			logger.debug("=========balance enough===========");
-			String ssn = VirtAcntUtil.getSsn();
-			String[] results = FasService.payAuth(insCd, acntNos.get(0), txnLogD.getSRC_TXN_AMT()+"",ssn , null, mchntCd, mchntTp, txnLogD.getBUSI_CD(), "S32");
+			String fasSsn = "45"+new TSeqService().getId("apsFasSsn", 10, "");
+			String[] results = FasService.payAuth(insCd, acntNos.get(0), txnLogD.getSRC_TXN_AMT()+"",fasSsn , null, mchntCd, mchntTp, txnLogD.getBUSI_CD(), "S32");
 			if("0000".equals(results[2])){
 				txnLogD.setDEST_TXN_ST(TDataDictConst.TXN_DEST_RES_SUC);
 				int i = TApsTxnLogService.updateTxnLogByPK(txnLogD);//修改D方向交易
@@ -286,7 +287,7 @@ public class PayforReviewAction extends ActionSupport {
 				message = "复核成功";
 			}else{
 				message = "预授权失败，请联系技术人员处理";
-				logger.error("=============payAuth fail,ssn:"+ssn+"=================");
+				logger.error("=============payAuth fail,ssn:"+fasSsn+"=================");
 			}
 		}
 	}
