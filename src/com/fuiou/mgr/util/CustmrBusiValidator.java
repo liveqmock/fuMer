@@ -40,6 +40,7 @@ public class CustmrBusiValidator {
 	public static final String SRC_CHNL_APP = "APP";//APP签约
 	public static final String SRC_CHNL_IVR = "IVR";//IVR签约
 	public static final String SRC_CHNL_JZH = "JZH";//金账户签约
+	public static final String SRC_CHNL_ZQP = "ZQP";//债权平台签约
 	public static final String SRC_CHNL_DSF = "DSF";//代收付接口签约
 	public static final String SRC_CHNL_WEB = "WEB";//代收付系统签约
 	
@@ -64,6 +65,7 @@ public class CustmrBusiValidator {
 		srcChnlMap.put(SRC_CHNL_APP, 15);
 		srcChnlMap.put(SRC_CHNL_IVR, 10);
 		srcChnlMap.put(SRC_CHNL_JZH, 5);
+		srcChnlMap.put(SRC_CHNL_ZQP, 5);
 		srcChnlMap.put(SRC_CHNL_DSF, 5);
 		srcChnlMap.put(SRC_CHNL_WEB, 5);
 	}
@@ -77,11 +79,11 @@ public class CustmrBusiValidator {
 			resultMap.put(SIGNATURE_ERR, errorCodeMap.get(CustmrBusiValidator.SIGNATURE_ERR));
 		}
 		TCustmrBusi busi = custmrBusiService.selectByAcntAndBusiCd(custmrBusi.getMCHNT_CD(),custmrBusi.getBUSI_CD(), custmrBusi.getACNT_NO(),CustmrBusiValidator.srcChnlMap.get(custmrBusi.getSrcChnl()));
-		if(null!=busi&&CustmrBusiContractUtil.CONTRACT_ST_VALID.equals(busi.getCONTRACT_ST())){
+		if(null!=busi&&CustmrBusiContractUtil.CONTRACT_ST_VALID.equals(busi.getCONTRACT_ST())&&!SRC_CHNL_WEB.equals(custmrBusi.getSrcChnl())){
 			resultMap.put(CONTRACT_IS_VALID, errorCodeMap.get(CustmrBusiValidator.CONTRACT_IS_VALID));
 			return resultMap;
 		}
-		//如果APP签约则判断卡密是否已经通过,如果已经通过不允许签约
+//		如果APP签约则判断卡密是否已经通过,如果已经通过不允许签约
 		if(SRC_CHNL_APP.equals(custmrBusi.getSrcChnl()) && busi!=null && busi.getACNT_IS_VERIFY_2().equals(CustmrBusiContractUtil.VERIFY_PASS)){
 			resultMap.put(PIN_IS_PASS, errorCodeMap.get(PIN_IS_PASS));
 			return resultMap;
@@ -90,7 +92,7 @@ public class CustmrBusiValidator {
 			resultMap.put(FORMAT_ERR, "业务代码"+custmrBusi.getBUSI_CD()+"不被支持");
 			return resultMap;
 		}
-		if(null==SystemParams.bankMap.get(custmrBusi.getBANK_CD())){
+		if(null==SystemParams.bankMap.get(custmrBusi.getBANK_CD()) && !SRC_CHNL_POS.equals(custmrBusi.getSrcChnl())){
 			resultMap.put(FORMAT_ERR, "银行代码"+custmrBusi.getBANK_CD()+"不被支持");
 			return resultMap;
 		}
@@ -174,7 +176,7 @@ public class CustmrBusiValidator {
 			return SignatureUtil.validate(custmrBusi, keyValue);//验签
 		}else if(SRC_CHNL_WEB.equals(custmrBusi.getSrcChnl())){//页面发起的直接过
 			return true;
-		}else{
+		}else{//内部系统对接
 			return SignatureUtil.validate(custmrBusi, "2ba02c706f01d0a3a4f9e5c30a8f75a6");//验签
 		}
 	}
