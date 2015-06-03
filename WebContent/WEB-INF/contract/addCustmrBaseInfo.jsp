@@ -257,8 +257,8 @@ $(function(){
       <td><input style="width: 125px;" type="text" name="custmrBusi.MOBILE_NO" id="MOBILE_NO" class="input_out" onfocus="this.className='input_on';this.onmouseout=''" onblur="this.className='input_off';this.onmouseout=function(){this.className='input_out'};" onmousemove="this.className='input_move'" onmouseout="this.className='input_out'"/><em>*</em></td>
     </tr>
     <tr>
-<!--       <td class="item">是否需要语音回拨签约：</td> -->
-<!--       <td><input  type="radio" name="custmrBusi.IS_CALLBACK" value="1" checked="checked"/>不需要<input type="radio" value="0" name="custmrBusi.IS_CALLBACK" id="ivrCall"/>需要 </td> -->
+      <td class="item">是否需要语音回拨签约：</td>
+      <td><input  type="radio" name="custmrBusi.IS_CALLBACK" value="1" checked="checked"/>不需要<input type="radio" value="0" name="custmrBusi.IS_CALLBACK" id="ivrCall"/>需要 </td>
       <td class="item">备注：</td>
       <td colspan="3"><input style="width: 125px;" type="text" maxlength="60" name="custmrBusi.RESERVED1" id="RESERVED1" class="input_out" onfocus="this.className='input_on';this.onmouseout=''" onblur="this.className='input_off';this.onmouseout=function(){this.className='input_out'};" onmousemove="this.className='input_move'" onmouseout="this.className='input_out'"/></td>
     </tr>
