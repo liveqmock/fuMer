@@ -18,6 +18,13 @@
     
     <schedule>
     	<job>
+    		<name>IvrCallJob</name>
+    		<group>IvrCallJobGroup</group>
+    		<job-class>com.fuiou.mgr.action.http.req.IvrCallJob</job-class>
+    		<durability>true</durability>
+    		<recover>false</recover>
+    	</job>
+    	<job>
     		<name>DiscardPayforJob</name>
     		<group>DiscardPayforJobGroup</group>
     		<job-class>com.fuiou.mgr.action.payfor.DiscardPayforJob</job-class>
@@ -52,6 +59,17 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <trigger>
+	        <cron>
+	            <name>IvrCallQuartzTrigger</name>
+                <group>IvrCallJob</group>
+	            <job-name>IvrCallJob</job-name>
+                <job-group>IvrCallJobGroup</job-group>
+<!-- 	            <cron-expression>0 17 16 ? * *</cron-expression>    -->
+				<cron-expression>0 0/5 * * * ?</cron-expression>
+	        </cron>
+	    </trigger>
         
          <trigger>
 	        <cron>
