@@ -85,15 +85,15 @@ public class CustmrBusiContractUtil{
 		}
 		if(busi!=null){
 			custmrBusi.setROW_ID(busi.getROW_ID());
+			custmrBusi.setGROUP_ID(CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_POS));
+			Calendar calendar = Calendar.getInstance();
+			custmrBusi.setCONTRACT_SIGN_DT(FuMerUtil.date2String(calendar.getTime(), "yyyyMMdd"));
+			calendar.add(Calendar.YEAR, 1);
+			custmrBusi.setCONTRACT_EXPIRE_DT(FuMerUtil.date2String(calendar.getTime(), "yyyyMMdd"));
 			custmrBusi.setREC_UPD_USR("FHT");
 			custmrBusi.setREC_UPD_TS(new Date());
 			custmrBusi.setRESERVED2("0");
 			custmrBusiService.updateByRowId(custmrBusi);
-			//把其他低级别签约方式置位失效
-			if(CONTRACT_ST_VALID.equals(custmrBusi.getCONTRACT_ST())){
-				int rows = custmrBusiService.updateRowTp(busi);
-				logger.debug(custmrBusi + "  "+ rows +" updated");
-			}
 		}else{
 			insertToDB(custmrBusi);
 		}
@@ -115,6 +115,11 @@ public class CustmrBusiContractUtil{
 		}
 		if(busi!=null){
 			custmrBusi.setROW_ID(busi.getROW_ID());
+			custmrBusi.setGROUP_ID(CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_APP));
+			Calendar calendar = Calendar.getInstance();
+			custmrBusi.setCONTRACT_SIGN_DT(FuMerUtil.date2String(calendar.getTime(), "yyyyMMdd"));
+			calendar.add(Calendar.YEAR, 1);
+			custmrBusi.setCONTRACT_EXPIRE_DT(FuMerUtil.date2String(calendar.getTime(), "yyyyMMdd"));
 			custmrBusi.setRESERVED2("0");
 			custmrBusi.setREC_UPD_USR("FHT");
 			custmrBusi.setREC_UPD_TS(new Date());
@@ -136,6 +141,10 @@ public class CustmrBusiContractUtil{
 		if(busi!=null){
 			custmrBusi.setROW_ID(busi.getROW_ID());
 			custmrBusi.setGROUP_ID(CustmrBusiValidator.srcChnlMap.get(CustmrBusiValidator.SRC_CHNL_POS));
+			Calendar calendar = Calendar.getInstance();
+			custmrBusi.setCONTRACT_SIGN_DT(FuMerUtil.date2String(calendar.getTime(), "yyyyMMdd"));
+			calendar.add(Calendar.YEAR, 1);
+			custmrBusi.setCONTRACT_EXPIRE_DT(FuMerUtil.date2String(calendar.getTime(), "yyyyMMdd"));
 			custmrBusi.setREC_UPD_USR("FHT");
 			custmrBusi.setREC_UPD_TS(new Date());
 			custmrBusi.setRESERVED2("0");
@@ -145,11 +154,6 @@ public class CustmrBusiContractUtil{
 			int rows = custmrBusiService.updateByRowId(custmrBusi);
 			if(1==rows)
 				logger.debug("custmrBusi rowId="+busi.getROW_ID()+" was modified");
-			if(CONTRACT_ST_VALID.equals(custmrBusi.getCONTRACT_ST())){
-				//把其他低级别签约方式置位失效
-				rows = custmrBusiService.updateRowTp(custmrBusi);
-				logger.debug(custmrBusi + "  "+ rows +" updated");
-			}
 		}else{
 			//如果是POS过来的且户名证件号、证件类型都不为空的情况下置为待验证，否则置为验证失败
 			if(StringUtils.isNotEmpty(custmrBusi.getUSER_NM()) && StringUtils.isNotEmpty(custmrBusi.getCREDT_TP())  && StringUtils.isNotEmpty(custmrBusi.getCREDT_NO())){
