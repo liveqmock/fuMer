@@ -78,6 +78,32 @@ public class IvrContractReqAction extends BaseAction {
 		}
 		this.writeMsg(Object2Xml.object2xml(respBean, IvrContractRespBean.class));
 	}
+	
+	/**
+	 * 根据卡号获取客户待生效的协议所对应的商户号
+	 */
+	public void getInfByMobile() {
+		reqBean = this.received();
+		if (reqBean != null) {
+			String mobile = reqBean.getMobile();
+			String inf = custmrBusiService.getMchntNmAndCardByMobile(mobile);// 根据卡号获取签约商户和卡号列表
+			if (StringUtils.isNotEmpty(inf)) {// 如果找到了
+				String[] strs = inf.split(",",3);
+				respBean.setRespCd("202000");
+				respBean.setRespDesc("处理成功");
+				respBean.setMchntCd(strs[2]);
+				respBean.setMchntNm(strs[0]);
+				respBean.setAcntNo(strs[1]);
+				this.writeMsg(Object2Xml.object2xml(respBean,IvrContractRespBean.class));
+			} else {
+				respBean.setRespCd("202007");
+				respBean.setRespDesc("找不到待签约记录");
+			}
+		}
+		this.writeMsg(Object2Xml.object2xml(respBean, IvrContractRespBean.class));
+	}
+	
+	
 
 	/**
 	 * 判断呼入手机号是否为签约手机号
@@ -136,6 +162,9 @@ public class IvrContractReqAction extends BaseAction {
 				if(isSentOk){
 					respBean.setRespCd("202000");
 					respBean.setRespDesc("订单信息发送成功");
+				}else{
+					respBean.setRespCd("202012");
+					respBean.setRespDesc("订单信息发送失败,请联系技术处理");
 				}
 			}
 		}
