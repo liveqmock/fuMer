@@ -75,7 +75,7 @@ public class SignatureUtil {
 //		bean.setAcntNo("a1");
 //		bean.setSignature("b9c6188854e9e877cfa7632dea7e94806919af3c");
 //		System.out.println(validate(bean, "123456"));
-		String x = DigestUtils.shaHex("0|0|0002900F0345178|01|0103|13718088888|230223198205060811|6228481538006160178|AC01|DSF|测试|黄东军");
+		String x = DigestUtils.shaHex("0|0|0002900F0345178|01|0102|15208277651|513030199106057016|6212264402017509088|AC01|DSF|tanke_test009|欧阳平");
 		System.out.println(x);
 		System.out.println(DigestUtils.shaHex(x+"|123456"));
 	}
